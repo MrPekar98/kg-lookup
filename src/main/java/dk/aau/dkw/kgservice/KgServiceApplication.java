@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class KgServiceApplication implements WebServerFactoryCustomizer<ConfigurableWebServerFactory>
 {
+    private static final String LUCENE_DIR = "/lucene";
+    private static final String TDB_DIR = "/tdb";
+
     public static void main(String[] args)
     {
         SpringApplication.run(KgServiceApplication.class, args);
@@ -25,13 +28,13 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/index")
-    public ResponseEntity<String> index(@RequestParam(value = "dir") String dir)
+    public ResponseEntity<String> index()
     {
         long start = System.currentTimeMillis();
 
         long duration = System.currentTimeMillis() - start;
-        duration = ((duration / 1000) / 60) / 60;
-        return ResponseEntity.ok("Indexed KG files in " + duration + " h");
+        duration = (duration / 1000) / 60;
+        return ResponseEntity.ok("Indexed KG files in " + duration + " m");
     }
 
     @GetMapping(value = "/search")
