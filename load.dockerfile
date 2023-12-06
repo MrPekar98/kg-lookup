@@ -4,9 +4,9 @@ RUN apt update
 RUN apt install openjdk-11-jdk wget zip -y
 
 WORKDIR /jena
-RUN wget https://dlcdn.apache.org/jena/source/jena-4.10.0-source-release.zip
-RUN unzip jena-4.10.0-source-release.zip
-RUN rm jena-4.10.0-source-release.zip
-WORKDIR jena-4.10.0/
+RUN wget https://archive.apache.org/dist/jena/binaries/apache-jena-4.2.0.zip
+RUN unzip apache-jena-4.2.0.zip
+RUN rm apache-jena-4.2.0.zip
+WORKDIR apache-jena-4.2.0/
 
-ENTRYPOINT ./apache-jena/bin/tdbloader --loc /tdb /rdf
+ENTRYPOINT ./bin/tdbloader --loc /tdb /rdf
