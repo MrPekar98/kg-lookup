@@ -3,6 +3,7 @@
 set -e
 
 DIR=$1
+IMAGE="kg-tdb"
 
 if [[ ! -d ${DIR} ]]
 then
@@ -12,7 +13,7 @@ fi
 
 if [[ "$(docker images -q ${IMAGE})" == "" ]]
 then
-  docker build -t kg-tdb -f load.dockerfile .
+  docker build -t ${IMAGE} -f load.dockerfile .
 fi
 
 mkdir -p tdb/
