@@ -1,6 +1,9 @@
 package dk.aau.dkw.kgservice.index.build;
 
 import dk.aau.dkw.kgservice.index.Index;
+import dk.aau.dkw.kgservice.index.LuceneIndex;
+import org.apache.jena.atlas.lib.Pair;
+import org.apache.lucene.store.Directory;
 
 import java.io.File;
 import java.util.List;
@@ -8,16 +11,21 @@ import java.util.List;
 /**
  * Construct Lucene indexes
  */
-public abstract class LuceneBuilder extends AbstractBuilder implements IndexBuilder<String, List<String>>
+public abstract class LuceneBuilder implements IndexBuilder<String, List<Pair<String, Double>>>
 {
-    public LuceneBuilder(File dataDirectory)
+    protected abstract Directory getDirectory();
+
+    @Override
+    public Index<String, List<Pair<String, Double>>> getIndex()
     {
-        super(dataDirectory);
+        return new LuceneIndex(getDirectory());
     }
 
     @Override
-    public Index<String, List<String>> getIndex()
+    public Index<String, List<Pair<String, Double>>> build()
     {
-        return null;
+        return abstractBuild();
     }
+
+    protected abstract Index<String, List<Pair<String, Double>>> abstractBuild();
 }

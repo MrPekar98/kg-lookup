@@ -9,4 +9,4 @@ RUN unzip apache-jena-4.2.0.zip
 RUN rm apache-jena-4.2.0.zip
 WORKDIR apache-jena-4.2.0/
 
-ENTRYPOINT ./bin/tdbloader --loc /tdb /rdf
+ENTRYPOINT ./bin/tdbloader --loc /tdb /rdf/*
