@@ -68,7 +68,7 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         }
 
         Set<Query> keys = new HashSet<>();
-        String query = "SELECT ?s DISTINCT ?p WHERE { ?s ?p ?o }";
+        String query = "SELECT DISTINCT ?s ?p WHERE { ?s ?p ?o }";
 
         try (QueryExecution qExec = QueryExecution.dataset(this.dataset).query(query).build())
         {
