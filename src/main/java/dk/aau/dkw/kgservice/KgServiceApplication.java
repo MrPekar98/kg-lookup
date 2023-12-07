@@ -85,7 +85,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             return ResponseEntity.ok(resultBuilder.toString());
         }
 
-        catch (IOException e)
+        catch (IOException | RuntimeException e)
         {
             long duration = System.currentTimeMillis() - start;
             duration = duration / 1000;

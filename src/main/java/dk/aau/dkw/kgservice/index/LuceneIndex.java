@@ -67,9 +67,7 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
 
                 for (String token : tokens)
                 {
-                    BooleanQuery.Builder fuzzyBuilder = new BooleanQuery.Builder();
-                    fuzzyBuilder.add(new FuzzyQuery(new Term(field, token)), BooleanClause.Occur.SHOULD);
-                    tokenQueryBuilder = tokenQueryBuilder.add(fuzzyBuilder.build(), BooleanClause.Occur.SHOULD);
+                    tokenQueryBuilder.add(new FuzzyQuery(new Term(field, token)), BooleanClause.Occur.SHOULD);
                 }
 
                 queryBuilder = queryBuilder.add(tokenQueryBuilder.build(), BooleanClause.Occur.SHOULD);
@@ -81,7 +79,7 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
 
         catch (IOException e)
         {
-            return List.of();
+            throw new RuntimeException(e.getMessage());
         }
     }
 
