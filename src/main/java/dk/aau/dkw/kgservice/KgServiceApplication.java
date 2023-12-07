@@ -1,5 +1,6 @@
 package dk.aau.dkw.kgservice;
 
+import dk.aau.dkw.kgservice.index.build.LuceneTDBBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
@@ -8,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.File;
 
 @SpringBootApplication
 @RestController
@@ -32,9 +35,23 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     {
         long start = System.currentTimeMillis();
 
-        long duration = System.currentTimeMillis() - start;
-        duration = (duration / 1000) / 60;
-        return ResponseEntity.ok("Indexed KG files in " + duration + " m");
+        try
+        {
+            LuceneTDBBuilder luceneBuilder = new LuceneTDBBuilder(new File(TDB_DIR), new File(LUCENE_DIR));
+            luceneBuilder.build();
+
+            long duration = System.currentTimeMillis() - start;
+            duration = (duration / 1000) / 60;
+            return ResponseEntity.ok("Indexed KG files in " + duration + " m");
+        }
+
+        catch (RuntimeException e)
+        {
+            long duration = System.currentTimeMillis() - start;
+            duration = (duration / 1000) / 60;
+
+            return ResponseEntity.badRequest().body("Exception thrown after " + duration + " m: " + e.getMessage());
+        }
     }
 
     @GetMapping(value = "/search")

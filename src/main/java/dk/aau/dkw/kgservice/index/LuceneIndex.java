@@ -12,7 +12,6 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
