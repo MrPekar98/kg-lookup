@@ -7,7 +7,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -81,6 +80,9 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
 
             QueryParser parser = new MultiFieldQueryParser(new String[]{URI_FIELD, LABEL_FIELD, COMMENT_FIELD, CATEGORY_FIELD}, this.analyzer);
             Query query = parser.parse(key);
+            parser.setDefaultOperator(QueryParser.Operator.OR);
+            System.out.println(parser.getNextToken().toString());
+
             return runQuery(query);
         }
 
