@@ -45,10 +45,17 @@
             <artifactId>lucene-core</artifactId>
             <version>9.8.0</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>7.17.1</version>
         </dependency>
     </dependencies>
 

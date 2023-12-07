@@ -8,6 +8,9 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 
@@ -58,7 +61,7 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
     {
         try
         {
-            List<String> tokens = tokenize(key);
+            /*List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
             for (String field : List.of(LABEL_FIELD, COMMENT_FIELD, CATEGORY_FIELD))
@@ -74,10 +77,14 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
             }
 
             Query query = queryBuilder.build();
+            return runQuery(query);*/
+
+            QueryParser parser = new MultiFieldQueryParser(new String[]{URI_FIELD, LABEL_FIELD, COMMENT_FIELD, CATEGORY_FIELD}, this.analyzer);
+            Query query = parser.parse(key);
             return runQuery(query);
         }
 
-        catch (IOException e)
+        catch (IOException | ParseException e)
         {
             throw new RuntimeException(e.getMessage());
         }
