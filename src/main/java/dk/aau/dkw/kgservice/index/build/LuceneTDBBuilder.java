@@ -49,18 +49,18 @@ public class LuceneTDBBuilder extends LuceneBuilder
 
             while (entries.hasNext())
             {
-                String entity = entries.next().entity();
-                TDBIndex.Query labelQuery = new TDBIndex.Query(entity, "http://www.w3.org/2000/01/rdf-schema#label"),
-                        commentQuery = new TDBIndex.Query(entity, "http://www.w3.org/2000/01/rdf-schema#comment"),
-                        categoryQuery = new TDBIndex.Query(entity, "http://dbpedia.org/ontology/category");
+                String entityUri = entries.next().entity();
+                TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
+                        commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
+                        categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category");
                 Set<String> labels = this.tdb.get(labelQuery),
                         comments = this.tdb.get(commentQuery),
                         categories = this.tdb.get(categoryQuery);
-                String[] entitySplit = entity.split("/");
-                entity = entitySplit[entitySplit.length - 1].replace('_', ' ');
+                String[] entitySplit = entityUri.split("/");
+                String entity = entitySplit[entitySplit.length - 1].replace('_', ' ');
 
                 Document doc = new Document();
-                doc.add(new Field(LuceneIndex.URI_FIELD, entity, TextField.TYPE_STORED));
+                doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
                 doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
                 doc.add(new Field(LuceneIndex.COMMENT_FIELD, concat(comments), TextField.TYPE_STORED));
                 doc.add(new Field(LuceneIndex.CATEGORY_FIELD, concat(categories), TextField.TYPE_STORED));
