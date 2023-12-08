@@ -6,6 +6,13 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 import java.util.List;
 
 public class XmlSerializer extends AbstractSerializer implements Serializer
@@ -34,12 +41,17 @@ public class XmlSerializer extends AbstractSerializer implements Serializer
                 root.appendChild(child);
             }
 
-            return document.getTextContent();
+            DOMSource source = new DOMSource(document);
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StringWriter writer = new StringWriter();
+            transformer.transform(source, new StreamResult(writer));
+
+            return writer.toString();
         }
 
-        catch (ParserConfigurationException e)
+        catch (ParserConfigurationException | TransformerException e)
         {
-            return ParserConfigurationException.class.getName() + ": " + e.getMessage();
+            return e.getClass().getName() + ": " + e.getMessage();
         }
     }
 }

@@ -83,6 +83,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
                 default -> "null";
             };
 
+            System.out.println("Query took " + (System.currentTimeMillis() - start) + "ms");
             return ResponseEntity.ok(serialized);
         }
 
