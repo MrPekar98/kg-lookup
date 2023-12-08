@@ -3,6 +3,7 @@ package dk.aau.dkw.kgservice.index.build;
 import dk.aau.dkw.kgservice.index.Index;
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.index.TDBIndex;
+import dk.aau.dkw.kgservice.result.Result;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -33,7 +34,7 @@ public class LuceneTDBBuilder extends LuceneBuilder
     }
 
     @Override
-    protected Index<String, List<Pair<String, Double>>> abstractBuild()
+    protected Index<String, List<Result>> abstractBuild()
     {
         if (this.closed)
         {
@@ -56,8 +57,6 @@ public class LuceneTDBBuilder extends LuceneBuilder
                 Set<String> labels = this.tdb.get(labelQuery),
                         comments = this.tdb.get(commentQuery),
                         categories = this.tdb.get(categoryQuery);
-                String[] entitySplit = entityUri.split("/");
-                String entity = entitySplit[entitySplit.length - 1].replace('_', ' ');
 
                 Document doc = new Document();
                 doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));

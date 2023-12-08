@@ -2,7 +2,9 @@ package dk.aau.dkw.kgservice;
 
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.index.build.LuceneTDBBuilder;
-import org.apache.jena.atlas.lib.Pair;
+import dk.aau.dkw.kgservice.result.JsonSerializer;
+import dk.aau.dkw.kgservice.result.Result;
+import dk.aau.dkw.kgservice.result.XmlSerializer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.boot.SpringApplication;
@@ -65,7 +67,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "10") int k)
+    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "10") int k, @RequestParam(value = "format", defaultValue = "json") String format)
     {
         long start = System.currentTimeMillis();
         query = query.replace("%20", " ");
@@ -74,15 +76,14 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
         try (Directory dir = FSDirectory.open(new File(LUCENE_DIR).toPath()))
         {
             LuceneIndex lucene = new LuceneIndex(dir, k);
-            List<Pair<String, Double>> results = lucene.get(query);
-            StringBuilder resultBuilder = new StringBuilder();
+            List<Result> results = lucene.get(query);
+            String serialized = switch (format) {
+                case "json" -> new JsonSerializer(results).serialize();
+                case "xml" -> new XmlSerializer(results).serialize();
+                default -> "null";
+            };
 
-            for (Pair<String, Double> result : results)
-            {
-                resultBuilder.append(result.getLeft()).append(" - ").append(result.getRight()).append(",");
-            }
-
-            return ResponseEntity.ok(resultBuilder.toString());
+            return ResponseEntity.ok(serialized);
         }
 
         catch (IOException | RuntimeException e)

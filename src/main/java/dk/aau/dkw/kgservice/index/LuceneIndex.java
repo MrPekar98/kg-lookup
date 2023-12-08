@@ -1,6 +1,6 @@
 package dk.aau.dkw.kgservice.index;
 
-import org.apache.jena.atlas.lib.Pair;
+import dk.aau.dkw.kgservice.result.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
+public class LuceneIndex implements Index<String, List<Result>>
 {
     public static final String URI_FIELD = "URI";
     public static final String LABEL_FIELD = "LABEL";
@@ -54,7 +54,7 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
     }
 
     @Override
-    public List<Pair<String, Double>> get(String key)
+    public List<Result> get(String key)
     {
         try
         {
@@ -99,15 +99,15 @@ public class LuceneIndex implements Index<String, List<Pair<String, Double>>>
         return tokens;
     }
 
-    private List<Pair<String, Double>> runQuery(Query q) throws IOException
+    private List<Result> runQuery(Query q) throws IOException
     {
         TopDocs docs = this.searcher.search(q, this.k);
-        List<Pair<String, Double>> results = new ArrayList<>(this.k);
+        List<Result> results = new ArrayList<>(this.k);
 
         for (ScoreDoc doc : docs.scoreDocs)
         {
             Document document = this.searcher.doc(doc.doc);
-            results.add(Pair.create(document.get(URI_FIELD), (double) doc.score));
+            results.add(new Result(document.get(URI_FIELD), (double) doc.score));
         }
 
         return results;
