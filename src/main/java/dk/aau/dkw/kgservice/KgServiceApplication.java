@@ -53,7 +53,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             duration = (duration / 1000) / 60;
             System.out.println("Finished in " + duration + " m");
 
-            return ResponseEntity.ok("Indexed KG files in " + duration + " m\n");
+            return ResponseEntity.ok("Indexed KG files in " + duration + "m\n");
         }
 
         catch (RuntimeException e)
@@ -62,7 +62,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             duration = (duration / 1000) / 60;
             System.err.println("Failed in " + duration + " m: " + e.getMessage());
 
-            return ResponseEntity.badRequest().body("Exception thrown after " + duration + " m: " + e.getMessage() + "\n");
+            return ResponseEntity.badRequest().body("Exception thrown after " + duration + "m: " + e.getMessage() + "\n");
         }
     }
 
@@ -93,7 +93,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             duration = duration / 1000;
             System.err.println("IOException when searching after " + duration + " s: " + e.getMessage());
 
-            return ResponseEntity.badRequest().body("Exception thrown after " + duration + " s: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Exception thrown after " + duration + "s: " + e.getMessage());
         }
     }
 }
