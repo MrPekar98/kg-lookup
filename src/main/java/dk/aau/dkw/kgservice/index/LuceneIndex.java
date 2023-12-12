@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LuceneIndex implements Index<String, List<Result>>
 {
@@ -115,6 +116,12 @@ public class LuceneIndex implements Index<String, List<Result>>
 
     @Override
     public Iterator<String> keys()
+    {
+        throw new UnsupportedOperationException("Unsupported");
+    }
+
+    @Override
+    public void forEach(Consumer<String> consumer)
     {
         throw new UnsupportedOperationException("Unsupported");
     }

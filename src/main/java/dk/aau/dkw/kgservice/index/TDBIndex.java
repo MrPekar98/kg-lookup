@@ -6,14 +6,13 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.sparql.engine.ResultSetStream;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseable
 {
@@ -79,6 +78,29 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
     }
 
     @Override
+    public void forEach(Consumer<Query> consumer)
+    {
+        if (this.closed)
+        {
+            throw new IllegalStateException("Index is closed");
+        }
+
+        String query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o }";
+
+        try (QueryExecution qExec = QueryExecution.dataset(this.dataset).query(query).build())
+        {
+            ResultSet rs = qExec.execSelect();
+
+            while (rs.hasNext())
+            {
+                String uri = rs.next().getResource("s").getURI();
+                Query key = new Query(uri, "");
+                consumer.accept(key);
+            }
+        }
+    }
+
+    @Override
     public void close()
     {
         this.model.close();
@@ -88,22 +110,24 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
 
     /**
      * Iterator of a single variable in a given result set
+     * WARNING: This class does not work, as it closes the iterator once the scope has changed.
+     *          So, this can't be used in keys().
      */
     public static class KeyIterator implements Iterator<Query>
     {
         private final String sub;
-        private static Iterator<QuerySolution> iter = Collections.emptyIterator();
+        private final Iterator<QuerySolution> iter;
 
         private KeyIterator(ResultSet resultSet, String subjectVariable)
         {
             this.sub = subjectVariable;
-            iter = resultSet;
+            this.iter = resultSet;
         }
 
         @Override
         public boolean hasNext()
         {
-            return iter.hasNext();
+            return this.iter.hasNext();
         }
 
         @Override
@@ -114,7 +138,7 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
                 return null;
             }
 
-            String uri = iter.next().getResource(this.sub).getURI();
+            String uri = this.iter.next().getResource(this.sub).getURI();
             return new Query(uri, "");
         }
     }

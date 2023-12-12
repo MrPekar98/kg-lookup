@@ -4,7 +4,6 @@ import dk.aau.dkw.kgservice.index.Index;
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.index.TDBIndex;
 import dk.aau.dkw.kgservice.result.Result;
-import org.apache.jena.atlas.lib.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -41,30 +40,31 @@ public class LuceneTDBBuilder extends LuceneBuilder
             throw new IllegalStateException("Lucene has already been constructed");
         }
 
-        Iterator<TDBIndex.Query> entries = this.tdb.keys();
-
         try (Analyzer analyzer = new StandardAnalyzer(); Directory dir = FSDirectory.open(this.luceneDir.toPath()))
         {
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
+            this.tdb.forEach(key -> {
+                try
+                {
+                    String entityUri = key.entity();
+                    TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
+                            commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
+                            categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category");
+                    Set<String> labels = this.tdb.get(labelQuery),
+                            comments = this.tdb.get(commentQuery),
+                            categories = this.tdb.get(categoryQuery);
 
-            while (entries.hasNext())
-            {
-                String entityUri = entries.next().entity();
-                TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
-                        commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
-                        categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category");
-                Set<String> labels = this.tdb.get(labelQuery),
-                        comments = this.tdb.get(commentQuery),
-                        categories = this.tdb.get(categoryQuery);
+                    Document doc = new Document();
+                    doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
+                    doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
+                    doc.add(new Field(LuceneIndex.COMMENT_FIELD, concat(comments), TextField.TYPE_STORED));
+                    doc.add(new Field(LuceneIndex.CATEGORY_FIELD, concat(categories), TextField.TYPE_STORED));
+                    writer.addDocument(doc);
+                }
 
-                Document doc = new Document();
-                doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
-                doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
-                doc.add(new Field(LuceneIndex.COMMENT_FIELD, concat(comments), TextField.TYPE_STORED));
-                doc.add(new Field(LuceneIndex.CATEGORY_FIELD, concat(categories), TextField.TYPE_STORED));
-                writer.addDocument(doc);
-            }
+                catch (IOException ignored) {}
+            });
 
             this.closed = true;
             this.tdb.close();
