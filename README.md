@@ -37,12 +37,15 @@ So there is no need to stop the service and rebuild it.
 
 ## Running the Service
 If you haven't stopped the service after setup, you can start performing lookups on the URL `http://localhost:7000/search?query=<QUERY>`.
-To specify the result set size, add the `k` option as in `http://localhost:7000/search?query=<QUERY>&k=25`.
+To specify the result set size, add the `k` option as in `http://localhost:7000/search?query=<QUERY>&k=<K>`.
+The default value of `k` is 10.
+The system supports output formats in JSON and XML: `http://localhost:7000/search?query=<QUERY>&k=<K>&format=<FORMAT>`.
+The default format is JSON.
 
-For example, if you want to lookup 25 KG entities using the query `Barack Obama`, you can do so with the following Curl command:
+For example, if you want to lookup 25 KG entities using the query `Barack Obama` in XML format, you can do so with the following Curl command:
 
 ```bash
-curl http:/localhost:7000/search?query=Barack%20Obama&k=25
+curl http:/localhost:7000/search?query=Barack%20Obama&k=25&format=xml
 ```
 
 In case you have stopped the service after setup, you can restart it with the following command:
