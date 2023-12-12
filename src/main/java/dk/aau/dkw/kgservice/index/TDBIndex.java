@@ -11,6 +11,7 @@ import org.apache.jena.tdb.TDBFactory;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseable
@@ -73,16 +74,7 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         try (QueryExecution qExec = QueryExecution.dataset(this.dataset).query(query).build())
         {
             ResultSet rs = qExec.execSelect();
-
-            while (rs.hasNext())
-            {
-                QuerySolution solution = rs.nextSolution();
-                String subject = solution.getResource("s").getURI(),
-                        predicate = solution.getResource("p").getURI();
-                keys.add(new Query(subject, predicate));
-            }
-
-            return keys.iterator();
+            return new KeyIterator(rs, "s", "p");
         }
     }
 
@@ -92,5 +84,34 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         this.model.close();
         this.dataset.close();
         this.closed = true;
+    }
+
+    public class KeyIterator implements Iterator<Query>
+    {
+        private ResultSet rs;
+        private String sub, pred;
+
+        private KeyIterator(ResultSet resultSet, String subjectVariable, String predicateVariable)
+        {
+            this.rs = resultSet;
+            this.sub = subjectVariable;
+            this.pred = predicateVariable;
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return this.rs.hasNext();
+        }
+
+        @Override
+        public Query next()
+        {
+            QuerySolution solution = this.rs.next();
+            String subject = solution.getResource(this.sub).getURI(),
+                    predicate = solution.getResource(this.pred).getURI();
+
+            return new Query(subject, predicate);
+        }
     }
 }
