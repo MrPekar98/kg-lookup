@@ -6,9 +6,11 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.sparql.engine.ResultSetStream;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -84,32 +86,36 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         this.closed = true;
     }
 
+    /**
+     * Iterator of a single variable in a given result set
+     */
     public static class KeyIterator implements Iterator<Query>
     {
-        private final Iterator<String> iterator;
+        private final String sub;
+        private static Iterator<QuerySolution> iter = Collections.emptyIterator();
 
         private KeyIterator(ResultSet resultSet, String subjectVariable)
         {
-            Set<String> rs = new HashSet<>();
-
-            while (resultSet.hasNext())
-            {
-                rs.add(resultSet.next().getResource(subjectVariable).getURI());
-            }
-
-            this.iterator = rs.iterator();
+            this.sub = subjectVariable;
+            iter = resultSet;
         }
 
         @Override
         public boolean hasNext()
         {
-            return this.iterator.hasNext();
+            return iter.hasNext();
         }
 
         @Override
         public Query next()
         {
-            return new Query(this.iterator.next(), "");
+            if (!hasNext())
+            {
+                return null;
+            }
+
+            String uri = iter.next().getResource(this.sub).getURI();
+            return new Query(uri, "");
         }
     }
 }
