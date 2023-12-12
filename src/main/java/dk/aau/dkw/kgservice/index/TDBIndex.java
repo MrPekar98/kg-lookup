@@ -11,7 +11,6 @@ import org.apache.jena.tdb.TDBFactory;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseable
@@ -68,13 +67,12 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
             throw new IllegalStateException("Index is closed");
         }
 
-        Set<Query> keys = new HashSet<>();
-        String query = "SELECT DISTINCT ?s ?p WHERE { ?s ?p ?o }";
+        String query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o }";
 
         try (QueryExecution qExec = QueryExecution.dataset(this.dataset).query(query).build())
         {
             ResultSet rs = qExec.execSelect();
-            return new KeyIterator(rs, "s", "p");
+            return new KeyIterator(rs, "s");
         }
     }
 
@@ -86,32 +84,32 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         this.closed = true;
     }
 
-    public class KeyIterator implements Iterator<Query>
+    public static class KeyIterator implements Iterator<Query>
     {
-        private ResultSet rs;
-        private String sub, pred;
+        private final Iterator<String> iterator;
 
-        private KeyIterator(ResultSet resultSet, String subjectVariable, String predicateVariable)
+        private KeyIterator(ResultSet resultSet, String subjectVariable)
         {
-            this.rs = resultSet;
-            this.sub = subjectVariable;
-            this.pred = predicateVariable;
+            Set<String> rs = new HashSet<>();
+
+            while (resultSet.hasNext())
+            {
+                rs.add(resultSet.next().getResource(subjectVariable).getURI());
+            }
+
+            this.iterator = rs.iterator();
         }
 
         @Override
         public boolean hasNext()
         {
-            return this.rs.hasNext();
+            return this.iterator.hasNext();
         }
 
         @Override
         public Query next()
         {
-            QuerySolution solution = this.rs.next();
-            String subject = solution.getResource(this.sub).getURI(),
-                    predicate = solution.getResource(this.pred).getURI();
-
-            return new Query(subject, predicate);
+            return new Query(this.iterator.next(), "");
         }
     }
 }
