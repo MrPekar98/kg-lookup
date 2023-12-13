@@ -63,6 +63,11 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
 
             return results;
         }
+
+        catch (Exception e)
+        {
+            return new HashSet<>();
+        }
     }
 
     @Override
