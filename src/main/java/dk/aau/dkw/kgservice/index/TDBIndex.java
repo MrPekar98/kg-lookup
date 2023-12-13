@@ -38,6 +38,11 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
             throw new IllegalStateException("Index is closed");
         }
 
+        else if (key.entity().contains("@") || key.entity().contains("?"))
+        {
+            return new HashSet<>();
+        }
+
         Set<String> results = new HashSet<>();
         String query = "SELECT ?o WHERE { <" + key.entity() + "> <" + key.predicate() + "> ?o }";
 

@@ -16,7 +16,6 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -57,9 +56,21 @@ public class LuceneTDBBuilder extends LuceneBuilder
 
                     Document doc = new Document();
                     doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
-                    doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
                     doc.add(new Field(LuceneIndex.COMMENT_FIELD, concat(comments), TextField.TYPE_STORED));
                     doc.add(new Field(LuceneIndex.CATEGORY_FIELD, concat(categories), TextField.TYPE_STORED));
+
+                    if (labels.isEmpty())
+                    {
+                        String[] split = entityUri.split("/");
+                        String label = split[split.length - 1].replace('_', ' ');
+                        doc.add(new Field(LuceneIndex.LABEL_FIELD, label, TextField.TYPE_STORED));
+                    }
+
+                    else
+                    {
+                        doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
+                    }
+
                     writer.addDocument(doc);
                 }
 
