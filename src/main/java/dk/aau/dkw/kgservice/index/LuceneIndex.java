@@ -23,6 +23,7 @@ public class LuceneIndex implements Index<String, List<Result>>
     public static final String LABEL_FIELD = "LABEL";
     public static final String COMMENT_FIELD = "COMMENT";
     public static final String CATEGORY_FIELD = "CATEGORY";
+    public static final String DESCRIPTION_FIELD = "DESCRIPTION";
     private final Analyzer analyzer;
     private final IndexSearcher searcher;
     private int k;
@@ -108,7 +109,7 @@ public class LuceneIndex implements Index<String, List<Result>>
         for (ScoreDoc doc : docs.scoreDocs)
         {
             Document document = this.searcher.doc(doc.doc);
-            results.add(new Result(document.get(URI_FIELD), (double) doc.score));
+            results.add(new Result(document.get(URI_FIELD), document.get(LABEL_FIELD), document.get(DESCRIPTION_FIELD), doc.score));
         }
 
         return results;

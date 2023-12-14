@@ -21,7 +21,9 @@ public class JsonSerializer extends AbstractSerializer implements Serializer
         for (Result result : getRS())
         {
             JSONObject obj = new JSONObject();
-            obj.put("entity", result.item());
+            obj.put("entity", result.uri());
+            obj.put("label", result.label());
+            obj.put("description", result.description());
             obj.put("score", result.score());
             array.put(obj);
         }

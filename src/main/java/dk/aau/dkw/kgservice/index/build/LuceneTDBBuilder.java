@@ -49,10 +49,12 @@ public class LuceneTDBBuilder extends LuceneBuilder
                     String entityUri = key.entity();
                     TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
                             commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
-                            categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category");
+                            categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
+                            descriptionQuery = new TDBIndex.Query(entityUri, "http://schema.org/description");
                     Set<String> labels = this.tdb.get(labelQuery),
                             comments = this.tdb.get(commentQuery),
-                            categories = this.tdb.get(categoryQuery);
+                            categories = this.tdb.get(categoryQuery),
+                            descriptions = this.tdb.get(descriptionQuery);
 
                     Document doc = new Document();
                     doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
@@ -69,6 +71,16 @@ public class LuceneTDBBuilder extends LuceneBuilder
                     else
                     {
                         doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
+                    }
+
+                    if (descriptions.isEmpty())
+                    {
+                        doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, concat(comments), TextField.TYPE_STORED));
+                    }
+
+                    else
+                    {
+                        doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, concat(descriptions), TextField.TYPE_STORED));
                     }
 
                     writer.addDocument(doc);
