@@ -26,9 +26,11 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 {
     private static final String LUCENE_DIR = "/lucene";
     private static final String TDB_DIR = "/tdb";
+    private static Directory dir;
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
+        dir = FSDirectory.open(new File(LUCENE_DIR).toPath());
         SpringApplication.run(KgServiceApplication.class, args);
     }
 
@@ -73,7 +75,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
         query = query.replace("%20", " ");
         System.out.println("Query: " + query);
 
-        try (Directory dir = FSDirectory.open(new File(LUCENE_DIR).toPath()))
+        try
         {
             LuceneIndex lucene = new LuceneIndex(dir, k);
             List<Result> results = lucene.get(query);
@@ -87,11 +89,11 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             return ResponseEntity.ok(serialized);
         }
 
-        catch (IOException | RuntimeException e)
+        catch (RuntimeException e)
         {
             long duration = System.currentTimeMillis() - start;
             duration = duration / 1000;
-            System.err.println("IOException when searching after " + duration + " s: " + e.getMessage());
+            System.err.println("Exception when searching after " + duration + " s: " + e.getMessage());
 
             return ResponseEntity.badRequest().body("Exception thrown after " + duration + "s: " + e.getMessage());
         }
