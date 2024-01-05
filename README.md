@@ -16,10 +16,11 @@ Now, construct the Lucene indexes using the loaded TDB model.
 ```bash
 mkdir <LUCENE-DIR>
 docker build -t kg-lookup .
-docker run -it -v ${PWD}/tdb/:/tdb -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service kg-lookup
+docker run -it -v ${PWD}/tdb/:/tdb -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service --build-arg MEM=<MIN MEMORY ALLOCATION> kg-lookup
 ```
 
 Substitute the <LUCENE-DIR> placeholder with the value you have chosen.
+Insert the minimum memory requirement in the `MEM` argument to be allocated for the service.
 Run with the `-d` flag to detach the container.
 
 Finally, initiate a GET request to the `/index` endpoint using Curl to start the construction of the Lucene indexes.
