@@ -1,5 +1,6 @@
 package dk.aau.dkw.kgservice.index;
 
+import org.apache.jena.atlas.RuntimeIOException;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
@@ -52,13 +53,18 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
 
             while (rs.hasNext())
             {
-                QuerySolution solution = rs.nextSolution();
-                RDFNode node = solution.get("o");
-
-                if (node.isLiteral())
+                try
                 {
-                    results.add(node.asLiteral().getString());
+                    QuerySolution solution = rs.nextSolution();
+                    RDFNode node = solution.get("o");
+
+                    if (node.isLiteral())
+                    {
+                        results.add(node.asLiteral().getString());
+                    }
                 }
+
+                catch (RuntimeIOException ignored) {}
             }
 
             return results;
