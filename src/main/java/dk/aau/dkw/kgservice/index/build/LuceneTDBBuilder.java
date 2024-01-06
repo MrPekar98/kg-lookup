@@ -47,6 +47,12 @@ public class LuceneTDBBuilder extends LuceneBuilder
                 try
                 {
                     String entityUri = key.entity();
+
+                    if (entityUri == null)
+                    {
+                        return;
+                    }
+
                     TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
                             commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
                             categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
