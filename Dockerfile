@@ -13,4 +13,4 @@ ADD pom.xml .
 RUN sed -e 's/\r$//' mvnw > mvnw_unix
 RUN chmod +x mvnw_unix
 
-entrypoint ./mvnw_unix spring-boot:run -Dspring-boot.run.jvmArguments="-Xms${MEM}"
+entrypoint ./mvnw_unix spring-boot:run -Dspring-boot.run.jvmArguments="-Xmx${MEM}"
