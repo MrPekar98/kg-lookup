@@ -7,6 +7,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.tdb.TDBException;
 import org.apache.jena.tdb.TDBFactory;
 
 import java.io.File;
@@ -64,7 +65,7 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
                     }
                 }
 
-                catch (RuntimeIOException ignored) {}
+                catch (RuntimeIOException | TDBException ignored) {}
             }
 
             return results;
