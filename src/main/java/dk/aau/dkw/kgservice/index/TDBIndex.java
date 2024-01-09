@@ -107,13 +107,11 @@ public class TDBIndex implements Index<TDBIndex.Query, Set<String>>, AutoCloseab
         try (QueryExecution qExec = QueryExecution.dataset(this.dataset).query(query).build())
         {
             ResultSet rs = qExec.execSelect();
-
-            while (rs.hasNext())
-            {
-                String uri = rs.next().getResource("s").getURI();
+            rs.forEachRemaining(solution -> {
+                String uri = solution.getResource("s").getURI();
                 Query key = new Query(uri, "");
                 consumer.accept(key);
-            }
+            });
         }
     }
 
