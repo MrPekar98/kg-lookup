@@ -3,18 +3,36 @@
 set -e
 
 DIR=$1
-IMAGE="kg-tdb"
+IMAGE="openlink/virtuoso-opensource-7:7"
 
 if [[ ! -d ${DIR} ]]
 then
   echo "Directory '${DIR}' does not exist"
   exit 1
+elif [[ ! -d import/ ]]
+then
+  echo "Copying directory..."
+  mkdir import/
+
+  for F in ${DIR}/* ;\
+  do
+    cp ${F} import/
+  done
+
+  cp import.isql import/
+  echo "Done"
 fi
 
 if [[ "$(docker images -q ${IMAGE})" == "" ]]
 then
-  docker build -t ${IMAGE} -f load.dockerfile .
+  docker pull ${IMAGE}
 fi
 
-mkdir -p tdb/
-docker run --rm -v ${PWD}/${DIR}:/rdf -v ${PWD}/tdb:/tdb kg-tdb
+docker run --rm --name vos -d \
+           -v ${PWD}/database:/database \
+           -v ${PWD}/import:/import \
+           -t -p 1111:1111 -p 8890:8890 -i ${IMAGE}
+
+sleep 1m
+docker exec -it vos isql 1111 exec="SPARQL create GRAPH <http://localhost:8890/main_graph>"
+docker exec -it vos isql 1111 exec="LOAD /import/import.isql"

@@ -2,21 +2,23 @@
 Lookup service for knowledge graphs (KG).
 
 ## Loading Knowledge Graph
-Load the RDF files into a TDB model using the `load.sh` script:
+Load the RDF files into Virtuoso using the `load.sh` script:
 
 ```bash
 ./load.sh <KG-DIR>
 ```
 
 Specify the directory in which the RDF data reside.
-After running the script, the TDB files are stored in `tdb/`.
+A graph will be created into which the RDF data is inserted.
 
-Now, construct the Lucene indexes using the loaded TDB model.
+Note that only Turtle files are supported for now.
+
+Now, construct the Lucene indexes using the loaded Virtuoso instance.
 
 ```bash
 mkdir <LUCENE-DIR>
 docker build -t kg-lookup .
-docker run -it -v ${PWD}/tdb/:/tdb -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service --build-arg MEM=<MIN MEMORY ALLOCATION> kg-lookup
+docker run -it -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service --build-arg MEM=<MIN MEMORY ALLOCATION> kg-lookup
 ```
 
 Substitute the <LUCENE-DIR> placeholder with the value you have chosen.
@@ -33,7 +35,7 @@ To stop the service, hit `Ctrl+c`.
 
 ### Reconstructing Lucene Indexes
 In case you want to reconstruct the Lucene indexes, simply redo the Curl instruction above.
-The service will reconstruct the Lucene indexes using the latest TDB model, even if the service is still running.
+The service will reconstruct the Lucene indexes using the running Virtuoso instance, even if the service is still running.
 So there is no need to stop the service and rebuild it.
 
 ## Running the Service
