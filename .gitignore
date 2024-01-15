@@ -35,3 +35,9 @@ build/
 ### Other ###
 tdb/
 import/
+database/virtuoso.trx
+database/virtuoso.pxa
+database/virtuoso.log
+database/virtuoso.lck
+database/virtuoso.db
+database/virtuoso-temp.db
