@@ -33,6 +33,23 @@ curl http://localhost:7000/index
 
 To stop the service, hit `Ctrl+c`.
 
+To stop Virtuoso, enter the following commond.
+
+```bash
+docker stop vos
+```
+
+Construting Lucene indexes cannot be performed without Virtuoso running.
+If you have stopped Virtuoso and wish to re-construct Lucene indexes, run the following command to restart Virtuoso.
+
+```bash
+docker run --rm --name vos -d \
+           -v ${PWD}/database:/database \
+           -v ${PWD}/import:/import \
+           -t -p 1111:1111 -p 8890:8890 \
+           -i openlink/virtuoso-opensource-7:7
+```
+
 ### Reconstructing Lucene Indexes
 In case you want to reconstruct the Lucene indexes, simply redo the Curl instruction above.
 The service will reconstruct the Lucene indexes using the running Virtuoso instance, even if the service is still running.
