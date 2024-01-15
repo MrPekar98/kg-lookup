@@ -1,8 +1,13 @@
 FROM ubuntu:20.04
 
 RUN apt update
-RUN apt install openjdk-17-jre openjdk-17-jdk maven -y
+RUN DEBIAN_FRONTEND=noninteractive apt install openjdk-17-jre openjdk-17-jdk maven git -y
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+RUN git clone https://github.com/srdc/virt-jena.git
+WORKDIR virt-jena
+RUN mvn clean install
+WORKDIR ..
 
 ADD .mvn/ .mvn/
 ADD src/ src/
