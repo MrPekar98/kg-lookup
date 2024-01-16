@@ -1,2 +1,0 @@
-ld_dir('/import', '*.ttl', 'http://localhost:8890/graph');
-rdf_loader_run();
