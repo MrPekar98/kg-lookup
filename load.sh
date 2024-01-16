@@ -34,5 +34,5 @@ docker run --rm --name vos -d \
            -t -p 1111:1111 -p 8890:8890 -i ${IMAGE}
 
 sleep 1m
-docker exec -it vos isql 1111 exec="SPARQL create GRAPH <http://localhost:8890/main_graph>"
+docker exec -it vos isql 1111 exec="SPARQL create GRAPH <http://localhost:8890/graph>"
 docker exec -it vos isql 1111 exec="LOAD /import/import.isql"
