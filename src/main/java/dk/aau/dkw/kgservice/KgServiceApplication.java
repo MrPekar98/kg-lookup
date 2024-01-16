@@ -29,7 +29,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 {
     private static final String LUCENE_DIR = "/lucene";
     private static final String VIRTUOSO_URL = "http://" + System.getenv("VIRTUOSO") + ":8890/sparql";
-    private static final String VIRTUOSO_GRAPH_NAME = "http://localhost:8890/graph";
+    private static final String VIRTUOSO_GRAPH_NAME = "http://localhost:8890/" + System.getenv("GRAPH");
     private static Directory dir;
 
     public static void main(String[] args) throws IOException

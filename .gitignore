@@ -42,3 +42,4 @@ database/virtuoso.lck
 database/virtuoso.db
 database/virtuoso-temp.db
 virt-jena/
+import/import.isql

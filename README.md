@@ -5,10 +5,10 @@ Lookup service for knowledge graphs (KG).
 Load the RDF files into Virtuoso using the `load.sh` script:
 
 ```bash
-./load.sh <KG-DIR>
+./load.sh <KG-DIR> <GRAPH-NAME>
 ```
 
-Specify the directory in which the RDF data reside.
+Specify the directory in which the RDF data reside and the name of the graph in which the graph will be stored.
 A graph will be created into which the RDF data is inserted.
 
 Note that only Turtle files are supported for now.
@@ -18,10 +18,16 @@ Now, construct the Lucene indexes using the loaded Virtuoso instance.
 ```bash
 mkdir <LUCENE-DIR>
 docker build -t kg-lookup .
-docker run -it --network kg-lookup-network -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service -e MEM=<MIN MEMORY ALLOCATION> -e VIRTUOSO=$(docker exec vos bash -c "hostname -I") kg-lookup
+docker run -it --network kg-lookup-network \
+           -v ${PWD}/<LUCENE-DIR>:/lucene \
+           -p 7000:7000 \
+           -e MEM=<MIN MEMORY ALLOCATION> \
+           -e GRAPH=<GRAPH-NAME> \
+           -e VIRTUOSO=$(docker exec vos bash -c "hostname -I") \
+           --name kg-lookup-service kg-lookup
 ```
 
-Substitute the <LUCENE-DIR> placeholder with the value you have chosen.
+Substitute the <LUCENE-DIR> placeholder with the value you have chosen and <GRAPH> with the graph name used when loading the graph.
 Insert the minimum memory requirement in the `MEM` argument to be allocated for the service.
 For example, you can specify to allocate 10GB of memory by passing `MEM=10g`.
 Run with the `-d` flag to detach the container.

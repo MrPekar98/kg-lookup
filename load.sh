@@ -3,6 +3,7 @@
 set -e
 
 DIR=$1
+GRAPH=$2
 IMAGE="openlink/virtuoso-opensource-7:7"
 NETWORK="kg-lookup-network"
 
@@ -37,5 +38,9 @@ docker run --rm --name vos -d \
            -t -p 1111:1111 -p 8890:8890 -i ${IMAGE}
 
 sleep 1m
-docker exec -it vos isql 1111 exec="SPARQL create GRAPH <http://localhost:8890/graph>"
+
+echo "ld_dir('/import', '*.ttl', 'http://localhost:8890/${GRAPH}');" > import/import.isql
+echo "rdf_loader_run();" >> import/import.isql
+echo "checkpoint;" >> import/import.isql
+docker exec -it vos isql 1111 exec="SPARQL create GRAPH <http://localhost:8890/${GRAPH}>"
 docker exec -it vos isql 1111 exec="LOAD /import/import.isql"
