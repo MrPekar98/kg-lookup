@@ -18,7 +18,7 @@ Now, construct the Lucene indexes using the loaded Virtuoso instance.
 ```bash
 mkdir <LUCENE-DIR>
 docker build -t kg-lookup .
-docker run -it --network kg-lookup-network -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service -e MEM=<MIN MEMORY ALLOCATION> kg-lookup
+docker run -it --network kg-lookup-network -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-service -e MEM=<MIN MEMORY ALLOCATION> -e VIRTUOSO=$(docker exec vos bash -c "hostname -I") kg-lookup
 ```
 
 Substitute the <LUCENE-DIR> placeholder with the value you have chosen.
