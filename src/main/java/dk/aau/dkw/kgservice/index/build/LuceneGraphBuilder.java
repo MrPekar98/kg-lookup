@@ -1,8 +1,8 @@
 package dk.aau.dkw.kgservice.index.build;
 
+import dk.aau.dkw.kgservice.index.GraphIndex;
 import dk.aau.dkw.kgservice.index.Index;
 import dk.aau.dkw.kgservice.index.LuceneIndex;
-import dk.aau.dkw.kgservice.index.TDBIndex;
 import dk.aau.dkw.kgservice.result.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -19,15 +19,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-public class LuceneTDBBuilder extends LuceneBuilder
+public class LuceneGraphBuilder extends LuceneBuilder
 {
-    private TDBIndex tdb;
+    private GraphIndex graph;
     private File luceneDir;
     private boolean closed = false;
 
-    public LuceneTDBBuilder(File tdbDir, File luceneDir)
+    public LuceneGraphBuilder(GraphIndex graph, File luceneDir)
     {
-        this.tdb = new TDBIndex(tdbDir);
+        this.graph = graph;
         this.luceneDir = luceneDir;
     }
 
@@ -43,7 +43,7 @@ public class LuceneTDBBuilder extends LuceneBuilder
         {
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
-            this.tdb.forEach(key -> {
+            this.graph.forEach(key -> {
                 try
                 {
                     String entityUri = key.entity();
@@ -53,14 +53,14 @@ public class LuceneTDBBuilder extends LuceneBuilder
                         return;
                     }
 
-                    TDBIndex.Query labelQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
-                            commentQuery = new TDBIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
-                            categoryQuery = new TDBIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
-                            descriptionQuery = new TDBIndex.Query(entityUri, "http://schema.org/description");
-                    Set<String> labels = this.tdb.get(labelQuery),
-                            comments = this.tdb.get(commentQuery),
-                            categories = this.tdb.get(categoryQuery),
-                            descriptions = this.tdb.get(descriptionQuery);
+                    GraphIndex.Query labelQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
+                            commentQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
+                            categoryQuery = new GraphIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
+                            descriptionQuery = new GraphIndex.Query(entityUri, "http://schema.org/description");
+                    Set<String> labels = this.graph.get(labelQuery),
+                            comments = this.graph.get(commentQuery),
+                            categories = this.graph.get(categoryQuery),
+                            descriptions = this.graph.get(descriptionQuery);
 
                     Document doc = new Document();
                     doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
@@ -96,7 +96,6 @@ public class LuceneTDBBuilder extends LuceneBuilder
             });
 
             this.closed = true;
-            this.tdb.close();
             writer.close();
 
             return new LuceneIndex(dir);

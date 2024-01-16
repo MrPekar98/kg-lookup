@@ -3,10 +3,8 @@ package dk.aau.dkw.kgservice.index.build;
 import dk.aau.dkw.kgservice.index.Index;
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.result.Result;
-import org.apache.jena.atlas.lib.Pair;
 import org.apache.lucene.store.Directory;
 
-import java.io.File;
 import java.util.List;
 
 /**

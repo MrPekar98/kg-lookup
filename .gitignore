@@ -41,3 +41,4 @@ database/virtuoso.log
 database/virtuoso.lck
 database/virtuoso.db
 database/virtuoso-temp.db
+virt-jena/

@@ -1,7 +1,10 @@
 package dk.aau.dkw.kgservice;
 
 import dk.aau.dkw.kgservice.index.LuceneIndex;
-import dk.aau.dkw.kgservice.index.build.LuceneTDBBuilder;
+import dk.aau.dkw.kgservice.index.VirtuosoIndex;
+import dk.aau.dkw.kgservice.index.build.LuceneBuilder;
+import dk.aau.dkw.kgservice.index.build.LuceneGraphBuilder;
+
 import dk.aau.dkw.kgservice.result.JsonSerializer;
 import dk.aau.dkw.kgservice.result.Result;
 import dk.aau.dkw.kgservice.result.XmlSerializer;
@@ -25,7 +28,8 @@ import java.util.List;
 public class KgServiceApplication implements WebServerFactoryCustomizer<ConfigurableWebServerFactory>
 {
     private static final String LUCENE_DIR = "/lucene";
-    private static final String TDB_DIR = "/tdb";
+    private static final String VIRTUOSO_HOST = "";
+    private static final int VIRTUOSO_PORT = 8890;
     private static Directory dir;
 
     public static void main(String[] args) throws IOException
@@ -46,9 +50,9 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
         long start = System.currentTimeMillis();
         System.out.println("Constructing indexes...");
 
-        try
+        try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_HOST, VIRTUOSO_PORT))
         {
-            LuceneTDBBuilder luceneBuilder = new LuceneTDBBuilder(new File(TDB_DIR), new File(LUCENE_DIR));
+            LuceneBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(LUCENE_DIR));
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;

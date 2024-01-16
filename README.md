@@ -23,6 +23,7 @@ docker run -it -v ${PWD}/<LUCENE-DIR>:/lucene -p 7000:7000 --name kg-lookup-serv
 
 Substitute the <LUCENE-DIR> placeholder with the value you have chosen.
 Insert the minimum memory requirement in the `MEM` argument to be allocated for the service.
+For example, you can specify to allocate 10GB of memory by passing `MEM=10g`.
 Run with the `-d` flag to detach the container.
 
 Finally, initiate a GET request to the `/index` endpoint using Curl to start the construction of the Lucene indexes.
@@ -73,3 +74,20 @@ In case you have stopped the service after setup, you can restart it with the fo
 ```bash
 docker start kg-lookup-service
 ```
+
+# Developers
+Clone the Virtuoso client driver from GitHub.
+
+```bash
+git clone https://github.com/srdc/virt-jena.git
+```
+
+Now, install the driver with Maven (make sure to have Maven installed on the machine).
+
+```bash
+cd virt-jena
+mvn clean install
+cd ..
+```
+
+You are now good to go!
