@@ -4,6 +4,9 @@ set -e
 
 DIR=$1
 IMAGE="openlink/virtuoso-opensource-7:7"
+NETWORK="kg-lookup-network"
+
+docker network inspect ${NETWORK} >/dev/null 2>&1 || docker network create ${NETWORK}
 
 if [[ ! -d ${DIR} ]]
 then

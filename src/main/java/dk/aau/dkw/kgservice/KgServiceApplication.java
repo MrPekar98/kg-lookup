@@ -28,8 +28,8 @@ import java.util.List;
 public class KgServiceApplication implements WebServerFactoryCustomizer<ConfigurableWebServerFactory>
 {
     private static final String LUCENE_DIR = "/lucene";
-    private static final String VIRTUOSO_HOST = "";
-    private static final int VIRTUOSO_PORT = 8890;
+    private static final String VIRTUOSO_URL = "http://172.18.0.2:8890/sparql";
+    private static final String VIRTUOSO_GRAPH_NAME = "http://localhost:8890/graph";
     private static Directory dir;
 
     public static void main(String[] args) throws IOException
@@ -50,7 +50,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
         long start = System.currentTimeMillis();
         System.out.println("Constructing indexes...");
 
-        try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_HOST, VIRTUOSO_PORT))
+        try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
             LuceneBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(LUCENE_DIR));
             luceneBuilder.build();
@@ -67,6 +67,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             long duration = System.currentTimeMillis() - start;
             duration = (duration / 1000) / 60;
             System.err.println("Failed in " + duration + " m: " + e.getMessage());
+            e.printStackTrace();
 
             return ResponseEntity.badRequest().body("Exception thrown after " + duration + "m: " + e.getMessage() + "\n");
         }

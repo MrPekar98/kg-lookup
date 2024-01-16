@@ -11,6 +11,13 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
 {
     public record Query(String entity, String predicate) {}
 
+    protected String graphUri;
+
+    protected GraphIndex(String graphUri)
+    {
+        this.graphUri = graphUri;
+    }
+
     @Override
     public Set<String> get(GraphIndex.Query key)
     {
@@ -20,7 +27,7 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
         }
 
         Set<String> results = new HashSet<>();
-        String query = "SELECT ?o WHERE { <" + key.entity() + "> <" + key.predicate() + "> ?o }";
+        String query = "SELECT ?o WHERE { GRAPH <" + this.graphUri + "> { <" + key.entity() + "> <" + key.predicate() + "> ?o } }";
         return execGet(query);
     }
 
@@ -56,8 +63,8 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
                 return null;
             }
 
-            //String uri = this.iter.next().getResource(this.sub).getURI();
-            return new Query("uri", "");
+            String uri = this.iter.next().getResource(this.sub).getURI();
+            return new Query(uri, "");
         }
     }
 }

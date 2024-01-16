@@ -1,11 +1,10 @@
 package dk.aau.dkw.kgservice.index;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import virtuoso.jena.driver.VirtGraph;
-import virtuoso.jena.driver.VirtuosoQueryExecution;
-import virtuoso.jena.driver.VirtuosoQueryExecutionFactory;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,13 +13,14 @@ import java.util.function.Consumer;
 
 public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query, Set<String>>, AutoCloseable
 {
-    private VirtGraph graph;
+    private String url;
     private boolean closed = false;
 
-    public VirtuosoIndex(String host, int port)
+    public VirtuosoIndex(String endpointUrl, String graphName)
     {
-        String url = "jdbc:virtuoso://" + host + ":" + port;
-        this.graph = new VirtGraph(url, "dba", "dba");
+        super(graphName);
+        this.url = endpointUrl;
+        this.graphUri = graphName;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             throw new IllegalStateException("Index is closed");
         }
 
-        VirtuosoQueryExecution exec = VirtuosoQueryExecutionFactory.create(query, this.graph);
+        QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
         ResultSet rs = exec.execSelect();
         Set<String> results = new HashSet<>();
 
@@ -42,7 +42,7 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
 
             if (node.isLiteral())
             {
-                results.add(node.asLiteral().getString());
+                results.add(node.toString().split("@")[0]);
             }
         }
 
@@ -57,8 +57,8 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             throw new IllegalStateException("Index is closed");
         }
 
-        String query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o }";
-        VirtuosoQueryExecution exec = VirtuosoQueryExecutionFactory.create(query, this.graph);
+        String query = "SELECT DISTINCT ?s WHERE { GRAPH <" + super.graphUri + "> { ?s ?p ?o } }";
+        QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
         ResultSet rs = exec.execSelect();
 
         return new KeyIterator(rs, "s");
@@ -72,8 +72,8 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             throw new IllegalStateException("Index is closed");
         }
 
-        String query = "SELECT DISTINCT ?s WHERE { ?s ?p ?o }";
-        VirtuosoQueryExecution exec = VirtuosoQueryExecutionFactory.create(query, this.graph);
+        String query = "SELECT DISTINCT ?s WHERE { GRAPH <" + super.graphUri + "> { ?s ?p ?o } }";
+        QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
         ResultSet rs = exec.execSelect();
 
         while (rs.hasNext())
@@ -83,11 +83,13 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             GraphIndex.Query key = new GraphIndex.Query(uri, "");
             consumer.accept(key);
         }
+
+        exec.close();
     }
 
     @Override
     public void close()
     {
-        this.graph.close();
+        this.closed = true;
     }
 }
