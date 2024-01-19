@@ -17,20 +17,12 @@ Now, construct the Lucene indexes using the loaded Virtuoso instance.
 
 ```bash
 mkdir <LUCENE-DIR>
-docker build -t kg-lookup .
-docker run -it --network kg-lookup-network \
-           -v ${PWD}/<LUCENE-DIR>:/lucene \
-           -p 7000:7000 \
-           -e MEM=<MIN MEMORY ALLOCATION> \
-           -e GRAPH=<GRAPH-NAME> \
-           -e VIRTUOSO=$(docker exec vos bash -c "hostname -I") \
-           --name kg-lookup-service kg-lookup
+./run.sh <LUCENE-DIR> <GRAPH-NAME> <MIN MEMORY ALLOCATION>
 ```
 
-Substitute the <LUCENE-DIR> placeholder with the value you have chosen and <GRAPH> with the graph name used when loading the graph.
+Substitute the `LUCENE-DIR` placeholder with the value you have chosen and `GRAPH-NAME` with the graph name used when loading the graph.
 Insert the minimum memory requirement in the `MEM` argument to be allocated for the service.
 For example, you can specify to allocate 10GB of memory by passing `MEM=10g`.
-Run with the `-d` flag to detach the container.
 
 Finally, initiate a GET request to the `/index` endpoint using Curl to start the construction of the Lucene indexes.
 
@@ -46,7 +38,7 @@ To stop Virtuoso, enter the following commond.
 docker stop vos
 ```
 
-Construting Lucene indexes cannot be performed without Virtuoso running.
+Constructing Lucene indexes cannot be performed without Virtuoso running.
 If you have stopped Virtuoso and wish to re-construct Lucene indexes, run the following command to restart Virtuoso.
 
 ```bash

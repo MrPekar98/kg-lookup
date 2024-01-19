@@ -33,6 +33,7 @@ then
 fi
 
 docker run --rm --name vos -d \
+           --network kg-lookup-network \
            -v ${PWD}/database:/database \
            -v ${PWD}/import:/import \
            -t -p 1111:1111 -p 8890:8890 -i ${IMAGE}
