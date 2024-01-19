@@ -23,7 +23,6 @@ then
     cp ${F} import/
   done
 
-  cp import.isql import/
   echo "Done"
 fi
 
