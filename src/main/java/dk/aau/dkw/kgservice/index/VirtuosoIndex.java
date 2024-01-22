@@ -72,7 +72,7 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             throw new IllegalStateException("Index is closed");
         }
 
-        String query = "SELECT DISTINCT ?s WHERE { GRAPH <" + super.graphUri + "> { ?s ?p ?o } }";
+        String query = "SELECT DISTINCT ?s WHERE { GRAPH <" + super.graphUri + "> { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?o } }";
         QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
         ResultSet rs = exec.execSelect();
 
