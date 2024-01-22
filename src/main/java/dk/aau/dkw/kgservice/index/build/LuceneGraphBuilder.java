@@ -76,7 +76,14 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
                     else
                     {
-                        doc.add(new Field(LuceneIndex.LABEL_FIELD, concat(labels), TextField.TYPE_STORED));
+                        for (String label : labels)
+                        {
+                            if (!label.contains("?"))
+                            {
+                                doc.add(new Field(LuceneIndex.LABEL_FIELD, label, TextField.TYPE_STORED));
+                                break;
+                            }
+                        }
                     }
 
                     if (descriptions.isEmpty())
