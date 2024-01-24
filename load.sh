@@ -37,7 +37,7 @@ docker run --rm --name vos -d \
            -v ${PWD}/import:/import \
            -t -p 1111:1111 -p 8890:8890 -i ${IMAGE}
 
-sleep 1m
+sleep 2m
 
 echo "ld_dir('/import', '*.ttl', 'http://localhost:8890/${GRAPH}');" > import/import.isql
 echo "rdf_loader_run();" >> import/import.isql
