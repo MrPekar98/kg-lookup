@@ -61,24 +61,17 @@ public class LuceneIndex implements Index<String, List<Result>>
     {
         try
         {
-            List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+            List<String> tokens = tokenize(key);
 
-            for (var field : List.of(new Pair<>(LABEL_FIELD, 2.0f), new Pair<>(COMMENT_FIELD, 0.2f), new Pair<>(CATEGORY_FIELD, 0.2f)))
+            for (String token : tokens)
             {
-                BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
-
-                for (String token : tokens)
-                {
-                    TermQuery query = new TermQuery(new Term(field.getLeft(), token));
-                    tokenQueryBuilder.add(new BoostQuery(query, field.getRight()), BooleanClause.Occur.SHOULD);
-                }
-
-                queryBuilder = queryBuilder.add(tokenQueryBuilder.build(), BooleanClause.Occur.SHOULD);
+                TermQuery termQuery = new TermQuery(new Term(LABEL_FIELD, token));
+                queryBuilder.add(termQuery, BooleanClause.Occur.SHOULD);
             }
 
-            Query query = queryBuilder.build();
-            return runQuery(query);
+            Query q = queryBuilder.build();
+            return runQuery(q);
         }
 
         catch (IOException e)
@@ -105,10 +98,13 @@ public class LuceneIndex implements Index<String, List<Result>>
 
     private List<Result> runQuery(Query q) throws IOException
     {
-        TopDocs docs = this.searcher.search(q, this.k);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(this.k, 0);
+        this.searcher.search(q, collector);
+
+        ScoreDoc[] hits = collector.topDocs().scoreDocs;
         List<Result> results = new ArrayList<>(this.k);
 
-        for (ScoreDoc doc : docs.scoreDocs)
+        for (ScoreDoc doc : hits)
         {
             Document document = this.searcher.doc(doc.doc);
             results.add(new Result(document.get(URI_FIELD), document.get(LABEL_FIELD), document.get(DESCRIPTION_FIELD), doc.score));
