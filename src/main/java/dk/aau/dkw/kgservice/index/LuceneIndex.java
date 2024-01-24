@@ -1,6 +1,7 @@
 package dk.aau.dkw.kgservice.index;
 
 import dk.aau.dkw.kgservice.result.Result;
+import org.apache.jena.atlas.lib.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -63,13 +64,14 @@ public class LuceneIndex implements Index<String, List<Result>>
             List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
-            for (String field : List.of(LABEL_FIELD, COMMENT_FIELD, CATEGORY_FIELD))
+            for (var field : List.of(new Pair<>(LABEL_FIELD, 2.0f), new Pair<>(COMMENT_FIELD, 0.2f), new Pair<>(CATEGORY_FIELD, 0.2f)))
             {
                 BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
 
                 for (String token : tokens)
                 {
-                    tokenQueryBuilder.add(new FuzzyQuery(new Term(field, token)), BooleanClause.Occur.SHOULD);
+                    FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field.getLeft(), token));
+                    tokenQueryBuilder.add(new BoostQuery(fuzzyQuery, field.getRight()), BooleanClause.Occur.SHOULD);
                 }
 
                 queryBuilder = queryBuilder.add(tokenQueryBuilder.build(), BooleanClause.Occur.SHOULD);
