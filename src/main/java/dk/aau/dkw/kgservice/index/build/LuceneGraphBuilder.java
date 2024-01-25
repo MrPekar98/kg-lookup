@@ -48,7 +48,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                 {
                     String entityUri = key.entity();
 
-                    if (entityUri == null)
+                    if (entityUri == null || entityUri.contains(":Category"))
                     {
                         return;
                     }
