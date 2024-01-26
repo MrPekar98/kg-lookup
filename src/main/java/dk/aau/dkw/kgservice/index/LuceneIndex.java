@@ -70,8 +70,8 @@ public class LuceneIndex implements Index<String, List<Result>>
 
                 for (String token : tokens)
                 {
-                    TermQuery query = new TermQuery(new Term(field.getLeft(), token));
-                    tokenQueryBuilder.add(new BoostQuery(query, field.getRight()), BooleanClause.Occur.SHOULD);
+                    FuzzyQuery fuzzyQuery = new FuzzyQuery(new Term(field.getLeft(), token));
+                    tokenQueryBuilder.add(new BoostQuery(fuzzyQuery, field.getRight()), BooleanClause.Occur.SHOULD);
                 }
 
                 queryBuilder = queryBuilder.add(tokenQueryBuilder.build(), BooleanClause.Occur.SHOULD);
