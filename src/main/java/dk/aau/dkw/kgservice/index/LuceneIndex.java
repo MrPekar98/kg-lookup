@@ -87,6 +87,33 @@ public class LuceneIndex implements Index<String, List<Result>>
         }
     }
 
+    public boolean check(String entity)
+    {
+        try
+        {
+            Term term = new Term(URI_FIELD, entity);
+            FuzzyQuery query = new FuzzyQuery(term);
+            List<Result> results = runQuery(query);
+            String[] split = entity.split("/");
+            String postfix = split[split.length - 1];
+
+            for (Result result : results)
+            {
+                if (result.uri().endsWith(postfix))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        catch (IOException e)
+        {
+            return false;
+        }
+    }
+
     private List<String> tokenize(String str) throws IOException
     {
         List<String> tokens = new ArrayList<>();

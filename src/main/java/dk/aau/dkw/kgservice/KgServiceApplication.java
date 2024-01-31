@@ -112,4 +112,22 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             return ResponseEntity.badRequest().body("Exception thrown after " + duration + "s: " + e.getMessage());
         }
     }
+
+    @GetMapping(value = "/exists")
+    public ResponseEntity<Boolean> debug(@RequestParam(value = "entity") String entity)
+    {
+        try
+        {
+            LuceneIndex lucene = new LuceneIndex(dir);
+            boolean exists = lucene.check(entity);
+            System.out.println(entity + " exists: " + exists);
+
+            return ResponseEntity.ok(exists);
+        }
+
+        catch (RuntimeException e)
+        {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
