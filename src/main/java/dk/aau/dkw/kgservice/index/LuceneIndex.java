@@ -64,7 +64,8 @@ public class LuceneIndex implements Index<String, List<Result>>
             List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
-            for (var field : List.of(new Pair<>(LABEL_FIELD, 2.0f), new Pair<>(COMMENT_FIELD, 0.2f), new Pair<>(CATEGORY_FIELD, 0.2f)))
+            for (var field : List.of(new Pair<>(LABEL_FIELD, 2.0f), new Pair<>(URI_FIELD, 1.0f),
+                    new Pair<>(COMMENT_FIELD, 0.2f), new Pair<>(CATEGORY_FIELD, 0.2f)))
             {
                 BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
 
