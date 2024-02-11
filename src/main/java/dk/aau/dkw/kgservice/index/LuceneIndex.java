@@ -92,19 +92,10 @@ public class LuceneIndex implements Index<String, List<Result>>
     {
         try
         {
-            String[] inputSplit = entity.split("/");
-            String postfix = inputSplit[inputSplit.length - 1];
-            List<String> tokens = tokenize(inputSplit[inputSplit.length - 1]);
-            BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
-
-            for (String token : tokens)
-            {
-                Term term = new Term(URI_FIELD, token);
-                FuzzyQuery query = new FuzzyQuery(term);
-                tokenQueryBuilder.add(query, BooleanClause.Occur.SHOULD);
-            }
-
-            List<Result> results = runQuery(tokenQueryBuilder.build());
+            TermQuery query = new TermQuery(new Term(URI_FIELD, entity));
+            List<Result> results = runQuery(query);
+            String[] tokens = entity.split("/");
+            String postfix = tokens[tokens.length - 1];
 
             for (Result result : results)
             {
