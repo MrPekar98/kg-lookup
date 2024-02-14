@@ -2,15 +2,15 @@
 Lookup service for knowledge graphs (KG).
 
 This lookup service builds a Lucene index over RDF data which enables performing keyword search over the KG entities.
-Each KG entity is indexed with 5 Lucene fields that are used to describe the entity.
-These fields include the entity URI, label, comment, description, and category.
-Specifically, for each entity, this service performs a SPARQL query to retrieve the literal values of the RDF predicates for these fields (except the URI).
+Each KG entity is indexed with 6 Lucene fields that are used to describe the entity.
+These fields include the entity URI, URI postfix, label, comment, description, and category.
+Specifically, for each entity, this service constructs Lucene indexes by performing SPARQL queries to retrieve the literal values of the RDF predicates for these fields (except the URI and URI postfix).
 
 During indexing of KG entities, all entity URIs containing *"Category:"* in the URI postfix are ignored, as it has been observed that these entities pollute the result set during keyword search.
 
 During keyword search, a Boolean query is constructed.
-This query consists of multiple sub-queries, one for each of the fields: entity label, comment, and category.
-These fields are weighted, such that labels have weight 2.0, and comment and category each have the weight 0.2.
+This query consists of multiple sub-queries, one for each of the fields: entity label, URI postfix, comment, and category.
+These fields are weighted, such that labels have weight 20.0, URI postfixes have 10.0, and comment and category each have the weight 0.1.
 The weights are assigned in this way to avoid the likelihood that irrelevant entities are returned because the literal values of the returned entity comment and category mention another entity.
 Each field query is also a Boolean query consisting of a fuzzy query for each query term.
 Both the inner and outer Boolean queries apply the Boolean *OR* operator between its query components.

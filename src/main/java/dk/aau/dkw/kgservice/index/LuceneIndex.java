@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 public class LuceneIndex implements Index<String, List<Result>>
 {
     public static final String URI_FIELD = "URI";
+    public static final String POSTFIX_FIELD = "POSTFIX";
     public static final String LABEL_FIELD = "LABEL";
     public static final String COMMENT_FIELD = "COMMENT";
     public static final String CATEGORY_FIELD = "CATEGORY";
@@ -64,7 +65,7 @@ public class LuceneIndex implements Index<String, List<Result>>
             List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
-            for (var field : List.of(new Pair<>(LABEL_FIELD, 20.0f), new Pair<>(URI_FIELD, 10.0f),
+            for (var field : List.of(new Pair<>(LABEL_FIELD, 20.0f), new Pair<>(POSTFIX_FIELD, 10.0f),
                     new Pair<>(COMMENT_FIELD, 0.1f), new Pair<>(CATEGORY_FIELD, 0.1f)))
             {
                 BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
@@ -92,7 +93,7 @@ public class LuceneIndex implements Index<String, List<Result>>
     {
         try
         {
-            TermQuery query = new TermQuery(new Term(URI_FIELD, entity));
+            TermQuery query = new TermQuery(new Term(POSTFIX_FIELD, entity));
             List<Result> results = runQuery(query);
             String[] tokens = entity.split("/");
             String postfix = tokens[tokens.length - 1];

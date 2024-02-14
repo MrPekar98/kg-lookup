@@ -53,6 +53,8 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         return;
                     }
 
+                    String[] tokens = entityUri.split("/");
+                    String postfix = tokens[tokens.length - 1];
                     GraphIndex.Query labelQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
                             commentQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
                             categoryQuery = new GraphIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
@@ -66,11 +68,11 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     doc.add(new Field(LuceneIndex.URI_FIELD, entityUri, TextField.TYPE_STORED));
                     doc.add(new Field(LuceneIndex.COMMENT_FIELD, concat(comments), TextField.TYPE_STORED));
                     doc.add(new Field(LuceneIndex.CATEGORY_FIELD, concat(categories), TextField.TYPE_STORED));
+                    doc.add(new Field(LuceneIndex.POSTFIX_FIELD, postfix, TextField.TYPE_STORED));
 
                     if (labels.isEmpty())
                     {
-                        String[] split = entityUri.split("/");
-                        String label = split[split.length - 1].replace('_', ' ');
+                        String label = postfix.replace('_', ' ');
                         doc.add(new Field(LuceneIndex.LABEL_FIELD, label, TextField.TYPE_STORED));
                     }
 
