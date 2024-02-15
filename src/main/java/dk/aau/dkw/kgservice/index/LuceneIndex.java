@@ -93,10 +93,10 @@ public class LuceneIndex implements Index<String, List<Result>>
     {
         try
         {
-            TermQuery query = new TermQuery(new Term(POSTFIX_FIELD, entity));
-            List<Result> results = runQuery(query);
             String[] tokens = entity.split("/");
             String postfix = tokens[tokens.length - 1];
+            TermQuery query = new TermQuery(new Term(POSTFIX_FIELD, postfix));
+            List<Result> results = runQuery(query);
 
             for (Result result : results)
             {
