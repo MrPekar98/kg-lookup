@@ -95,7 +95,7 @@ public class LuceneIndex implements Index<String, List<Result>>
         {
             String[] tokens = entity.split("/");
             String postfix = tokens[tokens.length - 1];
-            TermQuery query = new TermQuery(new Term(POSTFIX_FIELD, postfix));
+            FuzzyQuery query = new FuzzyQuery(new Term(POSTFIX_FIELD, postfix));
             List<Result> results = runQuery(query);
 
             for (Result result : results)
