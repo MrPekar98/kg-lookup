@@ -12,7 +12,7 @@ During keyword search, a Boolean query is constructed.
 This query consists of multiple sub-queries, one for each of the fields: entity label, URI postfix, comment, and category.
 These fields are weighted, such that labels have weight 20.0, URI postfixes have 10.0, and comment and category each have the weight 0.1.
 The weights are assigned in this way to avoid the likelihood that irrelevant entities are returned because the literal values of the returned entity comment and category mention another entity.
-Each field query is also a Boolean query consisting of a fuzzy query for each query term.
+Each field query is also a Boolean query consisting of a term (exact match) query for each query token.
 Both the inner and outer Boolean queries apply the Boolean *OR* operator between its query components.
 
 ## Loading Knowledge Graph
