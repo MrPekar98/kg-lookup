@@ -66,7 +66,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             duration = (duration / 1000) / 60;
             isLoading = false;
             System.out.println("Finished in " + duration + " m");
-            System.out.println("Skipped entities: " + luceneBuilder.skippedEntities());
+            System.out.println("Skipped entities: " + luceneBuilder.skippedEntities().size());
 
             return ResponseEntity.ok("Indexed KG files in " + duration + "m\nSkipped entities: " + luceneBuilder.skippedEntities() + "\n");
         }

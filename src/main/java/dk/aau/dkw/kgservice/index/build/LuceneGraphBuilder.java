@@ -16,16 +16,17 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LuceneGraphBuilder extends LuceneBuilder
 {
     private GraphIndex graph;
     private File luceneDir;
     private boolean closed = false;
-    private final AtomicInteger skippedEntities = new AtomicInteger(0);
+    private final Map<String, String> skippedEntities = new HashMap<>();
 
     public LuceneGraphBuilder(GraphIndex graph, File luceneDir)
     {
@@ -103,9 +104,9 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     writer.addDocument(doc);
                 }
 
-                catch (IOException ignored)
+                catch (IOException e)
                 {
-                    this.skippedEntities.getAndIncrement();
+                    this.skippedEntities.put(key.entity(), e.getMessage());
                 }
             });
 
@@ -152,8 +153,8 @@ public class LuceneGraphBuilder extends LuceneBuilder
         }
     }
 
-    public int skippedEntities()
+    public Map<String, String> skippedEntities()
     {
-        return this.skippedEntities.get();
+        return this.skippedEntities;
     }
 }
