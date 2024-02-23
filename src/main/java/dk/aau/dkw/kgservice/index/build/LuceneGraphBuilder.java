@@ -18,12 +18,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LuceneGraphBuilder extends LuceneBuilder
 {
     private GraphIndex graph;
     private File luceneDir;
     private boolean closed = false;
+    private final AtomicInteger skippedEntities = new AtomicInteger(0);
 
     public LuceneGraphBuilder(GraphIndex graph, File luceneDir)
     {
@@ -101,7 +103,10 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     writer.addDocument(doc);
                 }
 
-                catch (IOException ignored) {}
+                catch (IOException ignored)
+                {
+                    this.skippedEntities.getAndIncrement();
+                }
             });
 
             this.closed = true;
@@ -145,5 +150,10 @@ public class LuceneGraphBuilder extends LuceneBuilder
         {
             return null;
         }
+    }
+
+    public int skippedEntities()
+    {
+        return this.skippedEntities.get();
     }
 }

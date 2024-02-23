@@ -59,15 +59,16 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
-            LuceneBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(LUCENE_DIR));
+            LuceneGraphBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(LUCENE_DIR));
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;
             duration = (duration / 1000) / 60;
             isLoading = false;
             System.out.println("Finished in " + duration + " m");
+            System.out.println("Skipped entities: " + luceneBuilder.skippedEntities());
 
-            return ResponseEntity.ok("Indexed KG files in " + duration + "m\n");
+            return ResponseEntity.ok("Indexed KG files in " + duration + "m\nSkipped entities: " + luceneBuilder.skippedEntities() + "\n");
         }
 
         catch (RuntimeException e)
