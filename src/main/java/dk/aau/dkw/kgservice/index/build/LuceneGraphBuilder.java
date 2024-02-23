@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LuceneGraphBuilder extends LuceneBuilder
 {
@@ -27,6 +28,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
     private File luceneDir;
     private boolean closed = false;
     private final Map<String, String> skippedEntities = new HashMap<>();
+    private final AtomicInteger insertedEntities = new AtomicInteger(0);
 
     public LuceneGraphBuilder(GraphIndex graph, File luceneDir)
     {
@@ -102,6 +104,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     }
 
                     writer.addDocument(doc);
+                    this.insertedEntities.incrementAndGet();
                 }
 
                 catch (IOException e)
@@ -156,5 +159,10 @@ public class LuceneGraphBuilder extends LuceneBuilder
     public Map<String, String> skippedEntities()
     {
         return this.skippedEntities;
+    }
+
+    public int insertedEntities()
+    {
+        return this.insertedEntities.get();
     }
 }
