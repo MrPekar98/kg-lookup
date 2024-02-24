@@ -17,7 +17,7 @@ public abstract class LuceneBuilder implements IndexBuilder<String, List<Result>
     @Override
     public Index<String, List<Result>> getIndex()
     {
-        return new LuceneIndex(getDirectory());
+        return new LuceneIndex(getDirectory(), false);
     }
 
     @Override
