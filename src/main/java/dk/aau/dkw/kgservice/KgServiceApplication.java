@@ -2,7 +2,6 @@ package dk.aau.dkw.kgservice;
 
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.index.VirtuosoIndex;
-import dk.aau.dkw.kgservice.index.build.LuceneBuilder;
 import dk.aau.dkw.kgservice.index.build.LuceneGraphBuilder;
 
 import dk.aau.dkw.kgservice.result.JsonSerializer;
@@ -19,9 +18,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 @RestController
@@ -29,6 +31,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 {
     private static final String LUCENE_DIR = "/lucene";
     private static final String KG_DIR = "/kg";
+    private static final String LOG_DIR = "/logs";
     private static final String VIRTUOSO_URL = "http://" + System.getenv("VIRTUOSO") + ":8890/sparql";
     private static final String VIRTUOSO_GRAPH_NAME = "http://localhost:8890/" + System.getenv("GRAPH");
     private static Directory dir;
@@ -36,8 +39,31 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
     public static void main(String[] args) throws IOException
     {
+        File logDir = new File(LOG_DIR);
+        logDir.mkdir();
+
         dir = FSDirectory.open(new File(LUCENE_DIR).toPath());
         SpringApplication.run(KgServiceApplication.class, args);
+    }
+
+    private static void logIndexing(int insertedEntities, Map<String, String> skippedEntities)
+    {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(LOG_DIR + "/index.log")))
+        {
+            writer.write("INSERTED ENTITIES: " + insertedEntities + "\n");
+
+            for (Map.Entry<String, String> entry : skippedEntities.entrySet())
+            {
+                writer.write(entry.getKey() + ": " + entry.getValue() + "\n");
+            }
+
+            writer.flush();
+        }
+
+        catch (IOException e)
+        {
+            throw new RuntimeException("Failed logging: " + e.getMessage());
+        }
     }
 
     @Override
@@ -66,6 +92,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             long duration = System.currentTimeMillis() - start;
             duration = (duration / 1000) / 60;
             isLoading = false;
+            logIndexing(luceneBuilder.insertedEntities(), luceneBuilder.skippedEntities());
             System.out.println("Finished in " + duration + " m");
             System.out.println("Inserted entities: " + luceneBuilder.insertedEntities());
             System.out.println("Skipped entities: " + luceneBuilder.skippedEntities().size());
