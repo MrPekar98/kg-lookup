@@ -26,6 +26,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
     private GraphIndex graph;
     private File luceneDir, kgDir;
     private boolean closed = false;
+    private final Set<String> existence = new HashSet<>();
     private final Map<String, String> skippedEntities = new HashMap<>();
     private final AtomicInteger insertedEntities = new AtomicInteger(0);
 
@@ -72,6 +73,12 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
                         String[] tokens = entityUri.split("/");
                         String postfix = tokens[tokens.length - 1];
+
+                        if (this.existence.contains(postfix))
+                        {
+                            continue;
+                        }
+
                         GraphIndex.Query labelQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#label"),
                                 commentQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
                                 categoryQuery = new GraphIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
@@ -116,12 +123,14 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
                         writer.addDocument(doc);
                         this.insertedEntities.incrementAndGet();
+                        this.existence.add(postfix);
                     }
                 }
             }
 
             this.closed = true;
             writer.close();
+            this.existence.clear();
 
             return new LuceneIndex(dir, false);
         }
