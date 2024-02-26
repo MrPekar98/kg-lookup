@@ -25,18 +25,20 @@ Load the RDF files into Virtuoso using the `load.sh` script:
 Specify the directory in which the RDF data reside and the name of the graph in which the graph will be stored.
 A graph will be created into which the RDF data is inserted.
 
-Note that only Turtle files are supported for now.
+Note that only <ins>Turtle</ins> files are supported for now.
 
-Now, construct the Lucene indexes using the loaded Virtuoso instance.
+Now, construct the Lucene indexes using the loaded Virtuoso instance by first starting the service.
 
 ```bash
 mkdir <LUCENE-DIR>
-./run.sh <LUCENE-DIR> <GRAPH-NAME> <MIN MEMORY ALLOCATION>
+./run.sh <LUCENE-DIR> <GRAPH-NAME> <MIN-MEMORY-ALLOCATION> <KG-DIR>
 ```
 
-Substitute the `LUCENE-DIR` placeholder with the value you have chosen and `GRAPH-NAME` with the graph name used when loading the graph.
-Insert the minimum memory requirement in the `MEM` argument to be allocated for the service.
+Substitute the `LUCENE-DIR` with the relative path to the directory in which to store the Lucene indexes.
+The value you have chosen for `GRAPH-NAME` when loading the graph previously should be used again.
+Insert the minimum memory requirement in the `MIN-MEMORY-ALLOCATION` argument to be allocated for the service.
 For example, you can specify to allocate 10GB of memory by passing `MEM=10g`.
+Finally, pass the relative path to the directory containing the RDF files.
 
 Finally, initiate a GET request to the `/index` endpoint using Curl to start the construction of the Lucene indexes.
 

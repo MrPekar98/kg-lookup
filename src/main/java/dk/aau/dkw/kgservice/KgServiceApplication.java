@@ -28,6 +28,7 @@ import java.util.List;
 public class KgServiceApplication implements WebServerFactoryCustomizer<ConfigurableWebServerFactory>
 {
     private static final String LUCENE_DIR = "/lucene";
+    private static final String KG_DIR = "/kg";
     private static final String VIRTUOSO_URL = "http://" + System.getenv("VIRTUOSO") + ":8890/sparql";
     private static final String VIRTUOSO_GRAPH_NAME = "http://localhost:8890/" + System.getenv("GRAPH");
     private static Directory dir;
@@ -59,7 +60,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
-            LuceneGraphBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(LUCENE_DIR));
+            LuceneGraphBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR));
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;
