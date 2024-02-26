@@ -29,15 +29,17 @@ public class LuceneIndex implements Index<String, List<Result>>
     private final Analyzer analyzer;
     private final IndexSearcher searcher;
     private int k;
+    private final boolean useFuzzy;
 
-    public LuceneIndex(Directory luceneDirectory)
+    public LuceneIndex(Directory luceneDirectory, boolean useFuzzy)
     {
-        this(luceneDirectory, 10);
+        this(luceneDirectory, 10, useFuzzy);
     }
 
-    public LuceneIndex(Directory luceneDirectory, int k)
+    public LuceneIndex(Directory luceneDirectory, int k, boolean useFuzzy)
     {
         this.k = k;
+        this.useFuzzy = useFuzzy;
         this.analyzer = new StandardAnalyzer();
 
         try
@@ -72,7 +74,8 @@ public class LuceneIndex implements Index<String, List<Result>>
 
                 for (String token : tokens)
                 {
-                    TermQuery query = new TermQuery(new Term(field.getLeft(), token));
+                    Term term = new Term(field.getLeft(), token);
+                    Query query = this.useFuzzy ? new FuzzyQuery(term) : new TermQuery(term);
                     tokenQueryBuilder.add(new BoostQuery(query, field.getRight()), BooleanClause.Occur.SHOULD);
                 }
 

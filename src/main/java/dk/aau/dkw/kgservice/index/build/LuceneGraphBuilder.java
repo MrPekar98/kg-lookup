@@ -123,7 +123,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
             this.closed = true;
             writer.close();
 
-            return new LuceneIndex(dir);
+            return new LuceneIndex(dir, false);
         }
 
         catch (IOException e)

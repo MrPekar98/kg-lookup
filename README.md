@@ -6,13 +6,13 @@ Each KG entity is indexed with 6 Lucene fields that are used to describe the ent
 These fields include the entity URI, URI postfix, label, comment, description, and category.
 Specifically, for each entity, this service constructs Lucene indexes by performing SPARQL queries to retrieve the literal values of the RDF predicates for these fields (except the URI and URI postfix).
 
-During indexing of KG entities, all entity URIs containing *"Category:"* in the URI postfix are ignored, as it has been observed that these entities pollute the result set during keyword search.
+During indexing of KG entities, all entity URIs containing *"Category:"* ro *"prop"* in the URI postfix are ignored, as it has been observed that these entities pollute the result set during keyword search.
 
 During keyword search, a Boolean query is constructed.
 This query consists of multiple sub-queries, one for each of the fields: entity label, URI postfix, comment, and category.
-These fields are weighted, such that labels have weight 20.0, URI postfixes have 10.0, and comment and category each have the weight 0.1.
+These fields are weighted, such that labels have weight 20.0, URI postfixes have 20.0, and comment and category each have the weight 0.1.
 The weights are assigned in this way to avoid the likelihood that irrelevant entities are returned because the literal values of the returned entity comment and category mention another entity.
-Each field query is also a Boolean query consisting of a term (exact match) query for each query token.
+Each field query is also a Boolean query consisting of a term (exact match) or fuzzy query for each query token.
 Both the inner and outer Boolean queries apply the Boolean *OR* operator between its query components.
 
 ## Loading Knowledge Graph
@@ -81,6 +81,15 @@ For example, if you want to lookup 25 KG entities using the query `Barack Obama`
 
 ```bash
 curl http:/localhost:7000/search?query=Barack%20Obama&k=25&format=xml
+```
+
+The service also supports fuzzy keyword search, which can be enabled by using the parameter `fuzzy=true`.
+By default, this parameter is false.
+
+An example request to query using fuzzy search looks like the following:
+
+```bash
+curl http://localhost:7000/search?query=Barack%20Obama&fuzzy=true
 ```
 
 In case you have stopped the service after setup, you can restart it with the following command:

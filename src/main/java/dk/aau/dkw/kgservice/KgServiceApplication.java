@@ -87,7 +87,8 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "10") int k, @RequestParam(value = "format", defaultValue = "json") String format)
+    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "10") int k,
+                                         @RequestParam(value = "format", defaultValue = "json") String format, @RequestParam(value = "fuzzy", defaultValue = "false") boolean useFuzzy)
     {
         long start = System.currentTimeMillis();
         query = query.replace("%20", " ");
@@ -95,7 +96,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
         try
         {
-            LuceneIndex lucene = new LuceneIndex(dir, k);
+            LuceneIndex lucene = new LuceneIndex(dir, k, useFuzzy);
             List<Result> results = lucene.get(query);
             String serialized = switch (format) {
                 case "json" -> new JsonSerializer(results).serialize();
@@ -122,7 +123,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     {
         try
         {
-            LuceneIndex lucene = new LuceneIndex(dir);
+            LuceneIndex lucene = new LuceneIndex(dir, false);
             boolean exists = lucene.check(entity);
             System.out.println(entity + " exists: " + exists);
 
