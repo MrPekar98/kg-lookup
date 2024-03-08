@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,7 +55,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
             for (File kgFile : Objects.requireNonNull(this.kgDir.listFiles()))
             {
-                try (BufferedReader reader = new BufferedReader(new FileReader(kgFile)))
+                try (BufferedReader reader = Files.newBufferedReader(kgFile.toPath(), StandardCharsets.UTF_16))
                 {
                     String line;
 
