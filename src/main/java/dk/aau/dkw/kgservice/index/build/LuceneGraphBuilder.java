@@ -14,10 +14,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -55,7 +52,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
             for (File kgFile : Objects.requireNonNull(this.kgDir.listFiles()))
             {
-                try (BufferedReader reader = Files.newBufferedReader(kgFile.toPath(), StandardCharsets.UTF_16))
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(kgFile), StandardCharsets.UTF_16)))
                 {
                     String line;
 
