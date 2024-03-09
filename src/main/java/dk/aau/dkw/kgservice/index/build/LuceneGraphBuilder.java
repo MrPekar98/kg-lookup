@@ -52,7 +52,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
             for (File kgFile : Objects.requireNonNull(this.kgDir.listFiles()))
             {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(kgFile), StandardCharsets.UTF_16)))
+                try (BufferedReader reader = Files.newBufferedReader(kgFile.toPath(), StandardCharsets.ISO_8859_1))
                 {
                     String line;
 
@@ -83,7 +83,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                                 commentQuery = new GraphIndex.Query(entityUri, "http://www.w3.org/2000/01/rdf-schema#comment"),
                                 categoryQuery = new GraphIndex.Query(entityUri, "http://dbpedia.org/ontology/category"),
                                 descriptionQuery = new GraphIndex.Query(entityUri, "http://schema.org/description");
-                        Set<String> labels = this.graph.get(labelQuery),
+                        Set<String> labels = this.graph.get(labelQuery),    // TODO: This is inefficient and should be one query
                                 comments = this.graph.get(commentQuery),
                                 categories = this.graph.get(categoryQuery),
                                 descriptions = this.graph.get(descriptionQuery);
@@ -126,8 +126,6 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         this.existence.add(postfix);
                     }
                 }
-
-                catch (MalformedInputException ignored) {}
             }
 
             this.closed = true;
