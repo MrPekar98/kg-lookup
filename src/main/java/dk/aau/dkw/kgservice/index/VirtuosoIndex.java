@@ -6,6 +6,8 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
+import java.nio.charset.MalformedInputException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -31,22 +33,30 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
             throw new IllegalStateException("Index is closed");
         }
 
-        QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
-        ResultSet rs = exec.execSelect();
-        Set<String> results = new HashSet<>();
-
-        while (rs.hasNext())
+        try
         {
-            QuerySolution solution = rs.nextSolution();
-            RDFNode node = solution.get("o");
+            QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
+            ResultSet rs = exec.execSelect();
+            Set<String> results = new HashSet<>();
 
-            if (node.isLiteral())
+            while (rs.hasNext())
             {
-                results.add(node.toString().split("@")[0]);
+                QuerySolution solution = rs.nextSolution();
+                RDFNode node = solution.get("o");
+
+                if (node.isLiteral())
+                {
+                    results.add(node.toString().split("@")[0]);
+                }
             }
+
+            return results;
         }
 
-        return results;
+        catch (Exception e)
+        {
+            return Collections.emptySet();
+        }
     }
 
     @Override
