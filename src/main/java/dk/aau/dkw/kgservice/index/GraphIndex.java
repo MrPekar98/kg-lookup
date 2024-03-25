@@ -3,13 +3,13 @@ package dk.aau.dkw.kgservice.index;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
 {
     public record Query(String entity, String predicate) {}
+
+    public record Triple(String subject, String predicate, String object) {}
 
     protected String graphUri;
 
@@ -26,12 +26,45 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
             return new HashSet<>();
         }
 
-        Set<String> results = new HashSet<>();
         String query = "SELECT ?o WHERE { GRAPH <" + this.graphUri + "> { <" + key.entity() + "> <" + key.predicate() + "> ?o } }";
         return execGet(query);
     }
 
+    public Set<Map<String, String>> batchGet(Set<String> uris, Map<String, String> predicateLabels)
+    {
+        boolean anyUris = false;
+        StringBuilder queryString = new StringBuilder("SELECT * WHERE { GRAPH <");
+        queryString.append(this.graphUri).append("> { VALUES ?uri { ");
+
+        for (String uri : uris)
+        {
+            if (uri.contains("@") || uri.contains("?"))
+            {
+                continue;
+            }
+
+            queryString.append(uri).append(" ");
+            anyUris = true;
+        }
+
+        if (!anyUris)
+        {
+            return new HashSet<>();
+        }
+
+        queryString.append("} ");
+
+        for (String predicate : predicateLabels.keySet())
+        {
+            queryString.append("OPTIONAL { ?uri <").append(predicate).append("> ?").append(predicateLabels.get(predicate)).append(" } ");
+        }
+
+        queryString.append("} }");
+        return execBatchGet(queryString.toString());
+    }
+
     protected abstract Set<String> execGet(String query);
+    protected abstract Set<Map<String, String>> execBatchGet(String query);
 
     /**
      * Iterator of a single variable in a given result set

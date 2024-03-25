@@ -7,10 +7,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import java.nio.charset.MalformedInputException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query, Set<String>>, AutoCloseable
@@ -48,6 +45,44 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
                 {
                     results.add(node.toString().split("@")[0]);
                 }
+            }
+
+            return results;
+        }
+
+        catch (Exception e)
+        {
+            return Collections.emptySet();
+        }
+    }
+
+    @Override
+    protected Set<Map<String, String>> execBatchGet(String query)
+    {
+        if (this.closed)
+        {
+            throw new IllegalStateException("Index is closed");
+        }
+
+        try
+        {
+            QueryExecution exec = QueryExecutionFactory.sparqlService(this.url, query);
+            ResultSet rs = exec.execSelect();
+            Set<Map<String, String>> results = new HashSet<>();
+
+            while (rs.hasNext())
+            {
+                QuerySolution solution = rs.nextSolution();
+                Map<String, String> result = new HashMap<>();
+
+                for (Iterator<String> it = solution.varNames(); it.hasNext();)
+                {
+                    String varName = it.next();
+                    RDFNode valueNode = solution.get(varName);
+                    result.put(varName, valueNode.isLiteral() ? valueNode.toString().split("@")[0] : valueNode.toString());
+                }
+
+                results.add(result);
             }
 
             return results;
