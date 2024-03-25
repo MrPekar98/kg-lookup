@@ -43,7 +43,7 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
                 continue;
             }
 
-            queryString.append(uri).append(" ");
+            queryString.append("<").append(uri).append("> ");
             anyUris = true;
         }
 
