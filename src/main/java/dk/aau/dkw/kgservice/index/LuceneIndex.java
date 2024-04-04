@@ -103,7 +103,7 @@ public class LuceneIndex implements Index<String, List<Result>>
 
             for (Result result : results)
             {
-                if (result.uri().endsWith(postfix))
+                if (entity.equals(result.uri()))
                 {
                     return true;
                 }
