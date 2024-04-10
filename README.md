@@ -37,7 +37,7 @@ mkdir <LUCENE-DIR>
 Substitute the `LUCENE-DIR` with the relative path to the directory in which to store the Lucene indexes.
 The value you have chosen for `GRAPH-NAME` when loading the graph previously should be used again.
 Insert the minimum memory requirement in the `MIN-MEMORY-ALLOCATION` argument to be allocated for the service.
-For example, you can specify to allocate 10GB of memory by passing `MEM=10g`.
+For example, you can specify to allocate 10GB of memory by passing `10g`.
 Finally, pass the relative path to the directory containing the RDF files.
 
 Finally, initiate a GET request to the `/index` endpoint using Curl to start the construction of the Lucene indexes.
