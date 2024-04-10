@@ -90,6 +90,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         if (entityUri.contains("Category:") || entityUri.contains("/prop") ||
                                 (this.domain != null && !entityUri.contains(this.domain)))
                         {
+                            this.skippedEntities.put(entityUri, "Does not belong to domain or contains \"Category:\" or \"/prop\".");
                             continue;
                         }
 
