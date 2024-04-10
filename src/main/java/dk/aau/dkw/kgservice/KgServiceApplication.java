@@ -73,20 +73,23 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/index")
-    public ResponseEntity<String> index()
+    public ResponseEntity<String> index(@RequestParam(value = "domain", defaultValue = "") String domain)
     {
         if (isLoading)
         {
             return ResponseEntity.badRequest().body("Indexes are currently being constructed");
         }
 
+        String entityDomain = !domain.isEmpty() ? domain : null;
         long start = System.currentTimeMillis();
         isLoading = true;
         System.out.println("Constructing indexes...");
 
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
-            LuceneGraphBuilder luceneBuilder = new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR));
+            LuceneGraphBuilder luceneBuilder =
+                    !domain.isEmpty() ? new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain) :
+                            new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR));
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;

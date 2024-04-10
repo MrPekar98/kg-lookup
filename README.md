@@ -46,6 +46,13 @@ Finally, initiate a GET request to the `/index` endpoint using Curl to start the
 curl http://localhost:7000/index
 ```
 
+You can specify from which domain the entities must come by using the `domain` argument.
+For example, you can specify that you only want to index entities from DBpedia by executing the following request with Curl.
+
+```bash
+curl http://localhost:7000/index?domain=dbpedia
+```
+
 You can retrieve the indexing log containing the number of inserted entities and the reason why some entities were skipped by copying the indexing log file to the current directory:
 
 ```bash
@@ -54,7 +61,7 @@ docker cp kg-lookup-servive:/logs/index.log .
 
 To stop the service, hit `Ctrl+c`.
 
-To stop Virtuoso, enter the following commond.
+To stop Virtuoso, enter the following command.
 
 ```bash
 docker stop vos

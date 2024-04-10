@@ -24,6 +24,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
 {
     private GraphIndex graph;
     private File luceneDir, kgDir;
+    private String domain = null;
     private boolean closed = false;
     private final int BATCH_SIZE = 10;
     private final Set<String> existence = new HashSet<>();
@@ -32,9 +33,15 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
     public LuceneGraphBuilder(GraphIndex graph, File kgDir, File luceneDir)
     {
+        this(graph, kgDir, luceneDir, null);
+    }
+
+    public LuceneGraphBuilder(GraphIndex graph, File kgDir, File luceneDir, String domain)
+    {
         this.graph = graph;
         this.kgDir = kgDir;
         this.luceneDir = luceneDir;
+        this.domain = domain;
     }
 
     @Override
@@ -80,7 +87,8 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         String[] split = line.split(" ");
                         String entityUri = split[0].replace("<", "").replace(">", "");
 
-                        if (entityUri.contains("Category:") || entityUri.contains("/prop"))
+                        if (entityUri.contains("Category:") || entityUri.contains("/prop") ||
+                                (this.domain != null && !entityUri.contains(this.domain)))
                         {
                             continue;
                         }
