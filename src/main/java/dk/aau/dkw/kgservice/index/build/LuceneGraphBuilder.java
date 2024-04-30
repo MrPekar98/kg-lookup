@@ -56,9 +56,11 @@ public class LuceneGraphBuilder extends LuceneBuilder
         {
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
-            final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#label", "label",
+            /*final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#label", "label",
                     "http://www.w3.org/2000/01/rdf-schema#comment", "comment",
                     "http://dbpedia.org/ontology/category", "category",
+                    "http://schema.org/description", "description");*/
+            final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#comment", "comment",
                     "http://schema.org/description", "description");
 
             for (File kgFile : Objects.requireNonNull(this.kgDir.listFiles()))
@@ -68,7 +70,6 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     String line;
                     Set<String> uris = new HashSet<>(BATCH_SIZE);
                     int insertCount = 0;
-
                     while ((line = reader.readLine()) != null)
                     {
                         if (line.startsWith("#"))

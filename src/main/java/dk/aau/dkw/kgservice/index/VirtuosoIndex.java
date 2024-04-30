@@ -90,6 +90,7 @@ public class VirtuosoIndex extends GraphIndex implements Index<GraphIndex.Query,
 
         catch (Exception e)
         {
+            System.out.println(e.getMessage() + "\n");
             return Collections.emptySet();
         }
     }

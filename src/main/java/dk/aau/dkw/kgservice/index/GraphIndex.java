@@ -33,8 +33,14 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
     public Set<Map<String, String>> batchGet(Set<String> uris, Map<String, String> predicateLabels)
     {
         boolean anyUris = false;
-        StringBuilder queryString = new StringBuilder("SELECT * WHERE { GRAPH <");
-        queryString.append(this.graphUri).append("> { VALUES ?uri { ");
+        StringBuilder queryString = new StringBuilder("SELECT ?uri (GROUP_CONCAT(?_label; separator = \" - \") AS ?label) ");
+        predicateLabels.forEach((key, value) -> queryString
+                                                .append("(GROUP_CONCAT(?_")
+                                                .append(value)
+                                                .append("; separator = \" - \") AS ?")
+                                                .append(value)
+                                                .append(") "));
+        queryString.append("WHERE { GRAPH <").append(this.graphUri).append("> { VALUES ?uri { ");
 
         for (String uri : uris)
         {
@@ -52,14 +58,14 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
             return new HashSet<>();
         }
 
-        queryString.append("} ");
+        queryString.append("} ?uri <http://www.w3.org/2000/01/rdf-schema#label> ?_label . ");
 
         for (String predicate : predicateLabels.keySet())
         {
-            queryString.append("OPTIONAL { ?uri <").append(predicate).append("> ?").append(predicateLabels.get(predicate)).append(" } ");
+            queryString.append("OPTIONAL { ?uri <").append(predicate).append("> ?_").append(predicateLabels.get(predicate)).append(" } ");
         }
 
-        queryString.append("} }");
+        queryString.append("} } GROUP BY ?uri");
         return execBatchGet(queryString.toString());
     }
 
