@@ -56,10 +56,6 @@ public class LuceneGraphBuilder extends LuceneBuilder
         {
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
-            /*final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#label", "label",
-                    "http://www.w3.org/2000/01/rdf-schema#comment", "comment",
-                    "http://dbpedia.org/ontology/category", "category",
-                    "http://schema.org/description", "description");*/
             final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#comment", "comment",
                     "http://schema.org/description", "description");
 
@@ -127,57 +123,26 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
     private void buildDocuments(IndexWriter writer, Set<Map<String, String>> results) throws IOException
     {
-        Map<String, Map<String, String>> documents = new HashMap<>();
-
         for (Map<String, String> result : results)
         {
             String uri = result.get("uri");
-
-            if (!documents.containsKey(uri))
-            {
-                String[] uriTokens = uri.split("/");
-                String uriPostfix = uriTokens[uriTokens.length - 1];
-                documents.put(uri, new HashMap<>());
-                documents.get(uri).put(LuceneIndex.POSTFIX_FIELD, uriPostfix);
-            }
-
             String label = result.getOrDefault("label", "");
             String comment = result.getOrDefault("comment", "");
-            String category = result.getOrDefault("category", "");
             String description = result.getOrDefault("description", "");
-            documents.get(uri).put(LuceneIndex.LABEL_FIELD, documents.get(uri).getOrDefault("label", "") + " " + label);
-            documents.get(uri).put(LuceneIndex.COMMENT_FIELD, documents.get(uri).getOrDefault("comment", "") + " " + comment);
-            documents.get(uri).put(LuceneIndex.CATEGORY_FIELD, documents.get(uri).getOrDefault("category", "") + " " + category);
-            documents.get(uri).put(LuceneIndex.DESCRIPTION_FIELD, documents.get(uri).getOrDefault("description", "") + " " + description);
-        }
-
-        for (Map.Entry<String, Map<String, String>> entry : documents.entrySet())
-        {
-            Document doc = new Document();
-            doc.add(new Field(LuceneIndex.URI_FIELD, entry.getKey(), TextField.TYPE_STORED));
-            doc.add(new Field(LuceneIndex.POSTFIX_FIELD, entry.getValue().get(LuceneIndex.POSTFIX_FIELD), TextField.TYPE_STORED));
-            doc.add(new Field(LuceneIndex.LABEL_FIELD, entry.getValue().get(LuceneIndex.LABEL_FIELD), TextField.TYPE_STORED));
-            doc.add(new Field(LuceneIndex.COMMENT_FIELD, entry.getValue().get(LuceneIndex.COMMENT_FIELD), TextField.TYPE_STORED));
-            doc.add(new Field(LuceneIndex.CATEGORY_FIELD, entry.getValue().get(LuceneIndex.CATEGORY_FIELD), TextField.TYPE_STORED));
-            doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, entry.getValue().get(LuceneIndex.DESCRIPTION_FIELD), TextField.TYPE_STORED));
-
-            writer.addDocument(doc);
-            this.existence.add(entry.getValue().get(LuceneIndex.POSTFIX_FIELD));
-            this.insertedEntities.incrementAndGet();
+            buildDocument(writer, uri, label, comment, description);
         }
     }
 
-    private void buildDocument(IndexWriter writer, String uri, String label, String comment, String category, String description) throws IOException
+    private void buildDocument(IndexWriter writer, String uri, String label, String comment, String description) throws IOException
     {
         String[] uriTokens = uri.split("/");
         String uriPostfix = uriTokens[uriTokens.length - 1];
         Document doc = new Document();
         doc.add(new Field(LuceneIndex.URI_FIELD, uri, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.COMMENT_FIELD, comment == null ? " " : comment, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.CATEGORY_FIELD, category == null ? " " : category, TextField.TYPE_STORED));
+        doc.add(new Field(LuceneIndex.COMMENT_FIELD, comment, TextField.TYPE_STORED));
         doc.add(new Field(LuceneIndex.POSTFIX_FIELD, uriPostfix, TextField.TYPE_STORED));
         doc.add(new Field(LuceneIndex.LABEL_FIELD, label == null ? uriPostfix.replace('_', ' ') : label, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, description == null ? " " : description, TextField.TYPE_STORED));
+        doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, description, TextField.TYPE_STORED));
 
         writer.addDocument(doc);
         this.insertedEntities.incrementAndGet();
