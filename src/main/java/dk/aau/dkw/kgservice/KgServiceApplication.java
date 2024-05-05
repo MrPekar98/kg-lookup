@@ -88,8 +88,8 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
             LuceneGraphBuilder luceneBuilder =
-                    !domain.isEmpty() ? new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain) :
-                            new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR));
+                    !domain.isEmpty() ? new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain, true) :
+                            new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), true);
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;
