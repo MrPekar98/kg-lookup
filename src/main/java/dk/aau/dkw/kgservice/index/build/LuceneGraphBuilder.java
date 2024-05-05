@@ -166,7 +166,8 @@ public class LuceneGraphBuilder extends LuceneBuilder
             System.out.print(" ");
         }
 
-        System.out.println("Inserted " + insertedEntities + " entities (avg batching time " + (totalElapsedTime / insertions) + " ms)\r");
+        System.out.print("\r");
+        System.out.print("Inserted " + insertedEntities + " entities (avg batching time " + (totalElapsedTime / insertions) + " ms)\r");
     }
 
     private static String concat(Set<String> strings)
