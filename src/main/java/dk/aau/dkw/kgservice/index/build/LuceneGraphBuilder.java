@@ -85,7 +85,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                             insertCount = 0;
                             uris.clear();
 
-                            if (entityCount % 1000 == 0)
+                            if (entityCount % 1000 == 0 && this.logProgress)
                             {
                                 log(entityCount, System.currentTimeMillis() - timer, entityCount / BATCH_SIZE);
                             }
