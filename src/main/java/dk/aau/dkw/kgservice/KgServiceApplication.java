@@ -76,7 +76,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
     @GetMapping(value = "/index")
     public ResponseEntity<String> index(@RequestParam(value = "domain", defaultValue = "") String domain,
-                                        @RequestParam(value = "in-memory", defaultValue = "false") boolean inMemory)
+                                        @RequestParam(value = "inmemory", defaultValue = "false") boolean inMemory)
     {
         if (isLoading)
         {
