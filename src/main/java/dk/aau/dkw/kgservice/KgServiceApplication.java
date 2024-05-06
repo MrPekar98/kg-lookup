@@ -76,14 +76,14 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
     @GetMapping(value = "/index")
     public ResponseEntity<String> index(@RequestParam(value = "domain", defaultValue = "") String domain,
-                                        @RequestParam(value = "inmemory", defaultValue = "false") boolean inMemory)
+                                        @RequestParam(value = "inmemory", defaultValue = "false") String inMemory)
     {
         if (isLoading)
         {
             return ResponseEntity.badRequest().body("Indexes are currently being constructed");
         }
 
-        else if (inMemory)
+        else if (inMemory.equals("true"))
         {
             System.out.println("Indexing in-memory");
         }
@@ -95,7 +95,7 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
-            LuceneBuilder luceneBuilder = inMemory ? new LuceneFileBuilder(new File(LUCENE_DIR), new File(KG_DIR), entityDomain, true) :
+            LuceneBuilder luceneBuilder = inMemory.equals("true") ? new LuceneFileBuilder(new File(LUCENE_DIR), new File(KG_DIR), entityDomain, true) :
                     new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain, true);
             luceneBuilder.build();
 
