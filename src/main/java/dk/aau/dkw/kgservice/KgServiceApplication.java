@@ -83,6 +83,11 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
             return ResponseEntity.badRequest().body("Indexes are currently being constructed");
         }
 
+        else if (inMemory)
+        {
+            System.out.println("Indexing in-memory");
+        }
+
         String entityDomain = !domain.isEmpty() ? domain : null;
         long start = System.currentTimeMillis();
         isLoading = true;

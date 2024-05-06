@@ -23,7 +23,7 @@ public class LuceneFileBuilder extends LuceneBuilder
     private File kgDir;
     private boolean isClosed = false;
     private String domain = null;
-    private static final int LOG_BATCH = 100;
+    private static final int LOG_BATCH = 1000;
 
     public LuceneFileBuilder(File luceneDir, File kgDir, String domain, boolean logProgress)
     {
