@@ -101,10 +101,15 @@ public class LuceneFileBuilder extends LuceneBuilder
                         else if (!entities.containsKey(entityUri))
                         {
                             entities.put(entityUri, new HashMap<>());
+
+                            for (String pred : predicates)
+                            {
+                                entities.get(entityUri).put(pred, "");
+                            }
                         }
 
                         String value = split[2].replace("<", "").replace(">", "");
-                        entities.get(entityUri).put(predicate, value);
+                        entities.get(entityUri).put(predicate, entities.get(entityUri).get(predicate) + " - " + value);
                     }
                 }
             }
