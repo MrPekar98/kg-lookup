@@ -50,8 +50,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
         try (Analyzer analyzer = new StandardAnalyzer(); Directory dir = FSDirectory.open(this.luceneDir.toPath()))
         {
-            int entityCount = 0;
-            long timer = System.currentTimeMillis();
+            long entityCount = 0, timer = System.currentTimeMillis();
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
             final Map<String, String> predicateLabels = Map.of("http://www.w3.org/2000/01/rdf-schema#comment", "comment",

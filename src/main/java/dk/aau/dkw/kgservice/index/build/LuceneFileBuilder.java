@@ -51,8 +51,7 @@ public class LuceneFileBuilder extends LuceneBuilder
             System.out.println("Collecting KG entities...");
         }
 
-        int retrievals = 0;
-        long startTime = System.currentTimeMillis();
+        long retrievals = 0, startTime = System.currentTimeMillis();
         Map<String, Map<String, String>> entities = new HashMap<>();
         Set<String> predicates = Set.of("http://www.w3.org/2000/01/rdf-schema#label",
                 "http://www.w3.org/2000/01/rdf-schema#comment", "http://schema.org/description");

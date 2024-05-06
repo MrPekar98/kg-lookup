@@ -29,7 +29,7 @@ public abstract class LuceneBuilder implements IndexBuilder<String, List<Result>
         this.luceneDir = luceneDir;
     }
 
-    protected static void log(int insertedEntities, long totalElapsedTime, int insertions)
+    protected static void log(long insertedEntities, long totalElapsedTime, long insertions)
     {
         for (int i = 0; i < 256; i++)
         {
