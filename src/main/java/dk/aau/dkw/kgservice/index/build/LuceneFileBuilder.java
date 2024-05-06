@@ -76,8 +76,8 @@ public class LuceneFileBuilder extends LuceneBuilder
 
                         else if (retrievals++ % LOG_BATCH == 0 && this.logProgress)
                         {
-                            long elsapedTime = System.currentTimeMillis() - startTime;
-                            log(retrievals, elsapedTime, retrievals);
+                            long elapsedTime = System.currentTimeMillis() - startTime;
+                            log(retrievals, elapsedTime, retrievals / LOG_BATCH);
                         }
 
                         String[] split = line.split(" ");
