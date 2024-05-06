@@ -120,6 +120,7 @@ public class LuceneFileBuilder extends LuceneBuilder
             }
 
             buildDocuments(entities, writer);
+            System.out.println();
             this.isClosed = true;
             return new LuceneIndex(dir, true);
         }
