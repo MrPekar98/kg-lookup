@@ -6,9 +6,6 @@ import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.result.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -18,18 +15,15 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LuceneGraphBuilder extends LuceneBuilder
 {
     private GraphIndex graph;
-    private File luceneDir, kgDir;
+    private File kgDir;
     private String domain = null;
     private boolean closed = false;
-    private final int BATCH_SIZE = 10;
     private final Set<String> existence = new HashSet<>();
-    private final Map<String, String> skippedEntities = new HashMap<>();
-    private final AtomicInteger insertedEntities = new AtomicInteger(0);
+    private final int BATCH_SIZE = 10;
     private final boolean logProgress;
 
     public LuceneGraphBuilder(GraphIndex graph, File kgDir, File luceneDir, boolean logProgess)
@@ -39,9 +33,9 @@ public class LuceneGraphBuilder extends LuceneBuilder
 
     public LuceneGraphBuilder(GraphIndex graph, File kgDir, File luceneDir, String domain, boolean logProgress)
     {
+        super(luceneDir);
         this.graph = graph;
         this.kgDir = kgDir;
-        this.luceneDir = luceneDir;
         this.domain = domain;
         this.logProgress = logProgress;
     }
@@ -70,6 +64,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                     String line;
                     Set<String> uris = new HashSet<>(BATCH_SIZE);
                     int insertCount = 0;
+
                     while ((line = reader.readLine()) != null)
                     {
                         if (line.startsWith("#"))
@@ -97,7 +92,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         if (entityUri.contains("Category:") || entityUri.contains("/prop") ||
                                 (this.domain != null && !entityUri.contains(this.domain)))
                         {
-                            this.skippedEntities.put(entityUri, "Does not belong to domain or contains \"Category:\" or \"/prop\".");
+                            super.skippedEntities.put(entityUri, "Does not belong to domain or contains \"Category:\" or \"/prop\".");
                             continue;
                         }
 
@@ -110,6 +105,7 @@ public class LuceneGraphBuilder extends LuceneBuilder
                         }
 
                         uris.add(entityUri);
+                        this.existence.add(postfix);
                         insertCount++;
                     }
 
@@ -119,10 +115,10 @@ public class LuceneGraphBuilder extends LuceneBuilder
             }
 
             this.closed = true;
-            writer.close();
             this.existence.clear();
+            writer.close();
 
-            return new LuceneIndex(dir, false);
+            return new LuceneIndex(dir, true);
         }
 
         catch (IOException e)
@@ -143,33 +139,6 @@ public class LuceneGraphBuilder extends LuceneBuilder
         }
     }
 
-    private void buildDocument(IndexWriter writer, String uri, String label, String comment, String description) throws IOException
-    {
-        String[] uriTokens = uri.split("/");
-        String uriPostfix = uriTokens[uriTokens.length - 1];
-        Document doc = new Document();
-        doc.add(new Field(LuceneIndex.URI_FIELD, uri, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.COMMENT_FIELD, comment, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.POSTFIX_FIELD, uriPostfix, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.LABEL_FIELD, label == null ? uriPostfix.replace('_', ' ') : label, TextField.TYPE_STORED));
-        doc.add(new Field(LuceneIndex.DESCRIPTION_FIELD, description, TextField.TYPE_STORED));
-
-        writer.addDocument(doc);
-        this.insertedEntities.incrementAndGet();
-        this.existence.add(uriPostfix);
-    }
-
-    private static void log(int insertedEntities, long totalElapsedTime, int insertions)
-    {
-        for (int i = 0; i < 256; i++)
-        {
-            System.out.print(" ");
-        }
-
-        System.out.print("\r");
-        System.out.print("Inserted " + insertedEntities + " entities (avg batching time " + (totalElapsedTime / insertions) + " ms)\r");
-    }
-
     private static String concat(Set<String> strings)
     {
         if (strings.isEmpty())
@@ -185,29 +154,5 @@ public class LuceneGraphBuilder extends LuceneBuilder
         }
 
         return builder.deleteCharAt(builder.length() - 1).toString();
-    }
-
-    @Override
-    protected Directory getDirectory()
-    {
-        try
-        {
-            return FSDirectory.open(this.luceneDir.toPath());
-        }
-
-        catch (IOException e)
-        {
-            return null;
-        }
-    }
-
-    public Map<String, String> skippedEntities()
-    {
-        return this.skippedEntities;
-    }
-
-    public int insertedEntities()
-    {
-        return this.insertedEntities.get();
     }
 }
