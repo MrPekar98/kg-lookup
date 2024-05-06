@@ -2,6 +2,8 @@ package dk.aau.dkw.kgservice;
 
 import dk.aau.dkw.kgservice.index.LuceneIndex;
 import dk.aau.dkw.kgservice.index.VirtuosoIndex;
+import dk.aau.dkw.kgservice.index.build.LuceneBuilder;
+import dk.aau.dkw.kgservice.index.build.LuceneFileBuilder;
 import dk.aau.dkw.kgservice.index.build.LuceneGraphBuilder;
 
 import dk.aau.dkw.kgservice.result.JsonSerializer;
@@ -73,7 +75,8 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/index")
-    public ResponseEntity<String> index(@RequestParam(value = "domain", defaultValue = "") String domain)
+    public ResponseEntity<String> index(@RequestParam(value = "domain", defaultValue = "") String domain,
+                                        @RequestParam(value = "in-memory", defaultValue = "false") boolean inMemory)
     {
         if (isLoading)
         {
@@ -87,9 +90,8 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
 
         try (VirtuosoIndex graph = new VirtuosoIndex(VIRTUOSO_URL, VIRTUOSO_GRAPH_NAME))
         {
-            LuceneGraphBuilder luceneBuilder =
-                    !domain.isEmpty() ? new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain, true) :
-                            new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), true);
+            LuceneBuilder luceneBuilder = inMemory ? new LuceneFileBuilder(new File(LUCENE_DIR), new File(KG_DIR), entityDomain, true) :
+                    new LuceneGraphBuilder(graph, new File(KG_DIR), new File(LUCENE_DIR), entityDomain, true);
             luceneBuilder.build();
 
             long duration = System.currentTimeMillis() - start;

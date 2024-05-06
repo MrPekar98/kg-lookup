@@ -33,6 +33,11 @@ public class LuceneFileBuilder extends LuceneBuilder
         this.domain = domain;
     }
 
+    public LuceneFileBuilder(File luceneDir, File kgDir, boolean logProgress)
+    {
+        this(luceneDir, kgDir, null, logProgress);
+    }
+
     @Override
     protected Index<String, List<Result>> abstractBuild()
     {
