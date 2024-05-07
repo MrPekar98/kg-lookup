@@ -121,6 +121,8 @@ public class LuceneFileBuilder extends LuceneBuilder
             buildDocuments(entities, writer);
             System.out.println();
             this.isClosed = true;
+            writer.close();
+
             return new LuceneIndex(dir, true);
         }
 
