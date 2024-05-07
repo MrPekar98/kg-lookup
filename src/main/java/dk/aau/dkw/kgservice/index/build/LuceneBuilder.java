@@ -36,8 +36,10 @@ public abstract class LuceneBuilder implements IndexBuilder<String, List<Result>
             System.out.print(" ");
         }
 
+        double avgBatchingTime = insertions == 0 ? totalElapsedTime : totalElapsedTime / insertions;
+
         System.out.print("\r");
-        System.out.print("Inserted " + insertedEntities + " entities (avg batching time " + (totalElapsedTime / insertions) + " ms)\r");
+        System.out.print("Inserted " + insertedEntities + " entities (avg batching time " + avgBatchingTime + " ms)\r");
     }
 
     protected Directory getDirectory()
