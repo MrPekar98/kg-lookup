@@ -72,7 +72,7 @@ public abstract class LuceneBuilder implements IndexBuilder<String, List<Result>
     protected void buildDocument(IndexWriter writer, String uri, String label, String comment, String description) throws IOException
     {
         String[] uriTokens = uri.split("/");
-        String uriPostfix = uriTokens[uriTokens.length - 1];
+        String uriPostfix = uriTokens[uriTokens.length - 1].replace("_", " ");
         Document doc = new Document();
         doc.add(new Field(LuceneIndex.URI_FIELD, uri, TextField.TYPE_STORED));
         doc.add(new Field(LuceneIndex.COMMENT_FIELD, comment, TextField.TYPE_STORED));
