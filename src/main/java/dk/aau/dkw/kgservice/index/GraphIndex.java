@@ -62,10 +62,11 @@ public abstract class GraphIndex implements Index<GraphIndex.Query, Set<String>>
 
         for (String predicate : predicateLabels.keySet())
         {
-            queryString.append("OPTIONAL { ?uri <").append(predicate).append("> ?_").append(predicateLabels.get(predicate)).append(" } ");
+            queryString.append("OPTIONAL { ?uri <").append(predicate).append("> ?_").append(predicateLabels.get(predicate))
+                    .append(" . FILTER(LANGMATCHES(lANG(?_").append(predicateLabels.get(predicate)).append(", \"en\"))) }");
         }
 
-        queryString.append("} } GROUP BY ?uri");
+        queryString.append("FILTER(LANGMATCHES(LANG(?_label, \"en\"))) . } } GROUP BY ?uri");
         return execBatchGet(queryString.toString());
     }
 

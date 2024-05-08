@@ -52,7 +52,7 @@ public class LuceneFileBuilder extends LuceneBuilder
         }
 
         long retrievals = 0, startTime = System.currentTimeMillis();
-        Map<String, Map<String, String>> entities = new HashMap<>();
+        Map<String, Map<String, Set<String>>> entities = new HashMap<>();
         Set<String> predicates = Set.of("http://www.w3.org/2000/01/rdf-schema#label",
                 "http://www.w3.org/2000/01/rdf-schema#comment", "http://schema.org/description");
 
@@ -103,12 +103,17 @@ public class LuceneFileBuilder extends LuceneBuilder
 
                             for (String pred : predicates)
                             {
-                                entities.get(entityUri).put(pred, "");
+                                entities.get(entityUri).put(pred, new HashSet<>());
                             }
                         }
 
                         String value = split[2].replace("<", "").replace(">", "");
-                        entities.get(entityUri).put(predicate, entities.get(entityUri).get(predicate) + " - " + value);
+
+                        if (!value.contains("@") || (value.contains("@") && value.contains("@en")))
+                        {
+                            Set<String> newTokens = Set.of(value.split(" "));
+                            entities.get(entityUri).get(predicate).addAll(newTokens);
+                        }
                     }
                 }
             }
@@ -132,18 +137,18 @@ public class LuceneFileBuilder extends LuceneBuilder
         }
     }
 
-    private void buildDocuments(Map<String, Map<String, String>> entities, IndexWriter writer) throws IOException
+    private void buildDocuments(Map<String, Map<String, Set<String>>> entities, IndexWriter writer) throws IOException
     {
         int insertions = 0;
         long startTime = System.currentTimeMillis();
 
-        for (Map.Entry<String, Map<String, String>> entry : entities.entrySet())
+        for (Map.Entry<String, Map<String, Set<String>>> entry : entities.entrySet())
         {
-            String uri = entry.getKey(),
-                    label = entry.getValue().getOrDefault("http://www.w3.org/2000/01/rdf-schema#label", ""),
-                    comment = entry.getValue().getOrDefault("http://www.w3.org/2000/01/rdf-schema#comment", ""),
-                    description = entry.getValue().getOrDefault("http://schema.org/description", "");
-            buildDocument(writer, uri, label, comment, description);
+            String uri = entry.getKey();
+            Set<String> label = entry.getValue().get("http://www.w3.org/2000/01/rdf-schema#label"),
+                    comment = entry.getValue().get("http://www.w3.org/2000/01/rdf-schema#comment"),
+                    description = entry.getValue().get("http://schema.org/description");
+            buildDocument(writer, uri, tokens2Str(label), tokens2Str(comment), tokens2Str(description));
 
             if (insertions++ % LOG_BATCH == 0 && this.logProgress)
             {
@@ -151,5 +156,12 @@ public class LuceneFileBuilder extends LuceneBuilder
                 log(insertions, elapsed, insertions);
             }
         }
+    }
+
+    private static String tokens2Str(Set<String> tokens)
+    {
+        StringBuilder builder = new StringBuilder();
+        tokens.forEach(str -> builder.append(str).append(" "));
+        return builder.toString();
     }
 }
