@@ -124,8 +124,8 @@ public class KgServiceApplication implements WebServerFactoryCustomizer<Configur
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "10") int k,
-                                         @RequestParam(value = "format", defaultValue = "json") String format, @RequestParam(value = "fuzzy", defaultValue = "false") boolean useFuzzy)
+    public ResponseEntity<String> search(@RequestParam(value = "query") String query, @RequestParam(value = "k", defaultValue = "50") int k,
+                                         @RequestParam(value = "format", defaultValue = "json") String format, @RequestParam(value = "fuzzy", defaultValue = "true") boolean useFuzzy)
     {
         long start = System.currentTimeMillis();
         query = query.replace("%20", " ");

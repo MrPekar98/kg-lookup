@@ -33,7 +33,7 @@ public class LuceneIndex implements Index<String, List<Result>>
 
     public LuceneIndex(Directory luceneDirectory, boolean useFuzzy)
     {
-        this(luceneDirectory, 10, useFuzzy);
+        this(luceneDirectory, 50, useFuzzy);
     }
 
     public LuceneIndex(Directory luceneDirectory, int k, boolean useFuzzy)

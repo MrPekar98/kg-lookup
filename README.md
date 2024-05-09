@@ -96,13 +96,14 @@ For example, if you want to lookup 25 KG entities using the query `Barack Obama`
 curl http:/localhost:7000/search?query=Barack%20Obama&k=25&format=xml
 ```
 
-The service also supports fuzzy keyword search, which can be enabled by using the parameter `fuzzy=true`.
+The service also supports fuzzy keyword search, which is by default enabled.
+It can be disabled by using the parameter `fuzzy=false`.
 By default, this parameter is false.
 
 An example request to query using fuzzy search looks like the following:
 
 ```bash
-curl http://localhost:7000/search?query=Barack%20Obama&fuzzy=true
+curl http://localhost:7000/search?query=Barack%20Obama&fuzzy=false
 ```
 
 In case you have stopped the service after setup, you can restart it with the following command:
