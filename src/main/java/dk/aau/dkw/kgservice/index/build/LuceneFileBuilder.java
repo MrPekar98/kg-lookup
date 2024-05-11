@@ -120,8 +120,8 @@ public class LuceneFileBuilder extends LuceneBuilder
                             value = value.substring(0, value.indexOf("@")).replace("\"", "");
                         }
 
-                        Set<String> tokens = Set.of(value.split(" "));
-                        entities.get(entityUri).get(predicate).addAll(tokens);
+                        String[] tokens = value.split(" ");
+                        entities.get(entityUri).get(predicate).addAll(List.of(tokens));
                     }
                 }
             }
