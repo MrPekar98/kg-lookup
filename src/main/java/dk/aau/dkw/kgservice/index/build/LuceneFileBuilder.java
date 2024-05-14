@@ -107,13 +107,21 @@ public class LuceneFileBuilder extends LuceneBuilder
                             }
                         }
 
-                        String value = split[2].replace("<", "").replace(">", "");
+                        int valueStart = line.lastIndexOf('>') + 2;
+                        String value = line.substring(valueStart, line.length() - 2);
 
-                        if (!value.contains("@") || (value.contains("@") && value.contains("@en")))
+                        if (value.contains("@"))
                         {
-                            Set<String> newTokens = Set.of(value.split(" "));
-                            entities.get(entityUri).get(predicate).addAll(newTokens);
+                            if (!value.contains("@en"))
+                            {
+                                continue;
+                            }
+
+                            value = value.substring(0, value.indexOf("@")).replace("\"", "");
                         }
+
+                        String[] tokens = value.split(" ");
+                        entities.get(entityUri).get(predicate).addAll(List.of(tokens));
                     }
                 }
             }
