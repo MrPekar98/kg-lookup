@@ -62,13 +62,30 @@ public class LuceneIndex implements Index<String, List<Result>>
     @Override
     public List<Result> get(String key)
     {
+        return get(key, true);
+    }
+
+    public List<Result> get(String key, boolean usePostfix)
+    {
+        List<Pair<String, Float>> fields = new ArrayList<>(List.of(new Pair<>(LABEL_FIELD, 10.0f),
+                new Pair<>(COMMENT_FIELD, 0.1f), new Pair<>(DESCRIPTION_FIELD, 0.1f)));
+
+        if (usePostfix)
+        {
+            fields.add(new Pair<>(POSTFIX_FIELD, 20.0f));
+        }
+
+        return search(key, fields);
+    }
+
+    private List<Result> search(String key, List<Pair<String, Float>> fields)
+    {
         try
         {
             List<String> tokens = tokenize(key);
             BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
-            for (var field : List.of(new Pair<>(LABEL_FIELD, 10.0f), new Pair<>(POSTFIX_FIELD, 20.0f),
-                    new Pair<>(COMMENT_FIELD, 0.1f), new Pair<>(DESCRIPTION_FIELD, 0.1f)))
+            for (var field : fields)
             {
                 BooleanQuery.Builder tokenQueryBuilder = new BooleanQuery.Builder();
 
