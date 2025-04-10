@@ -1,14 +1,14 @@
-package dk.aau.dkw.kgservice;
+package anonymous.kgservice;
 
-import dk.aau.dkw.kgservice.index.LuceneIndex;
-import dk.aau.dkw.kgservice.index.VirtuosoIndex;
-import dk.aau.dkw.kgservice.index.build.LuceneBuilder;
-import dk.aau.dkw.kgservice.index.build.LuceneFileBuilder;
-import dk.aau.dkw.kgservice.index.build.LuceneGraphBuilder;
+import anonymous.kgservice.index.LuceneIndex;
+import anonymous.kgservice.index.VirtuosoIndex;
+import anonymous.kgservice.index.build.LuceneBuilder;
+import anonymous.kgservice.index.build.LuceneFileBuilder;
+import anonymous.kgservice.index.build.LuceneGraphBuilder;
 
-import dk.aau.dkw.kgservice.result.JsonSerializer;
-import dk.aau.dkw.kgservice.result.Result;
-import dk.aau.dkw.kgservice.result.XmlSerializer;
+import anonymous.kgservice.result.JsonSerializer;
+import anonymous.kgservice.result.Result;
+import anonymous.kgservice.result.XmlSerializer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.boot.SpringApplication;

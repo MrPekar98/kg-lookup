@@ -1,6 +1,6 @@
-package dk.aau.dkw.kgservice.index.build;
+package anonymous.kgservice.index.build;
 
-import dk.aau.dkw.kgservice.index.Index;
+import anonymous.kgservice.index.Index;
 
 public interface IndexBuilder<K, V>
 {

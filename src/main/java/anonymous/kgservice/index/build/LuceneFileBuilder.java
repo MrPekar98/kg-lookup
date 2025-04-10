@@ -1,8 +1,8 @@
-package dk.aau.dkw.kgservice.index.build;
+package anonymous.kgservice.index.build;
 
-import dk.aau.dkw.kgservice.index.Index;
-import dk.aau.dkw.kgservice.index.LuceneIndex;
-import dk.aau.dkw.kgservice.result.Result;
+import anonymous.kgservice.index.Index;
+import anonymous.kgservice.index.LuceneIndex;
+import anonymous.kgservice.result.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;

@@ -8,7 +8,7 @@
         <version>3.2.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>dk.aau.dkw</groupId>
+    <groupId>anonymous</groupId>
     <artifactId>kg-service</artifactId>
     <version>1.0.0</version>
     <name>kg-service</name>

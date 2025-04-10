@@ -1,4 +1,4 @@
-package dk.aau.dkw.kgservice.index;
+package anonymous.kgservice.index;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;

@@ -1,6 +1,6 @@
-package dk.aau.dkw.kgservice.index;
+package anonymous.kgservice.index;
 
-import dk.aau.dkw.kgservice.result.Result;
+import anonymous.kgservice.result.Result;
 import org.apache.jena.atlas.lib.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;

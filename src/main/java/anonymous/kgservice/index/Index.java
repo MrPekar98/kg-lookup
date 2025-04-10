@@ -1,4 +1,4 @@
-package dk.aau.dkw.kgservice.index;
+package anonymous.kgservice.index;
 
 import java.util.Iterator;
 import java.util.function.Consumer;

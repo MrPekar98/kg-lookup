@@ -1,4 +1,4 @@
-package dk.aau.dkw.kgservice.result;
+package anonymous.kgservice.result;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

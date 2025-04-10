@@ -1,4 +1,4 @@
-package dk.aau.dkw.kgservice.result;
+package anonymous.kgservice.result;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
